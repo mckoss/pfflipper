@@ -33,6 +33,9 @@ APP_REGEX = re.compile(r'\s*"application":\s*\"([a-z0-9-]+)"')
 
 
 def intcomma(value):
+    if value is None:
+        return "---"
+
     orig = str(value)
     while True:
         new = re.sub("^(-?\d+)(\d{3})", '\g<1>,\g<2>', orig)
@@ -139,6 +142,9 @@ def load_application():
         else:
             options.application = raw_input("Application: ")
 
+    if options.docs:
+        options.root_url = 'http://%s.%s/' % (options.application, options.server)
+
     if not hasattr(options, 'root_url'):
         options.root_url = 'http://%s.%s.%s/' % (ADMIN, options.application, options.server)
 
@@ -211,6 +217,7 @@ def config():
     parser.add_option('-u', '--username')
     parser.add_option('-p', '--password')
     parser.add_option('-a', '--application')
+    parser.add_option('-d', '--docs', action='store_true')
     parser.add_option('-v', '--verbose', action='store_true')
     parser.add_option('-q', '--quiet', action='store_true')
     parser.add_option('-r', '--raw', action='store_true',
@@ -417,24 +424,22 @@ def list_remote_files():
     """
     Get the list of files on the remote server, with metadata.
     """
-    url = options.root_url + '?method=list&depth=0'
+    url = options.root_url + (options.docs and 'docs/' or '') + '?method=list&depth=0'
     options.listing = {}
     try:
         cursor_param = ""
         while True:
             response = urllib2.urlopen(AuthRequest(url + cursor_param))
-            result = json.loads(response.read(), object_hook=as_datetime)
-            # Change result of list command on 12/8/10
-            if 'items' in result:
-                options.listing.update(result['items'])
-                if 'cursor' not in result:
-                    break
-                cursor_param = "&cursor=%s" % result['cursor']
-                if options.verbose:
-                    print "Paging: %s" % cursor_param
-            else:
-                options.listing = result
+            result = response.read()
+            if options.verbose:
+                print result
+            result = json.loads(result, object_hook=as_datetime)
+            options.listing.update(result['items'])
+            if 'cursor' not in result:
                 break
+            cursor_param = "&cursor=%s" % result['cursor']
+            if options.verbose:
+                print "Paging: %s" % cursor_param
     except urllib2.HTTPError, e:
         # For newly created apps - listing will return error.
         # Treat as empty on the server.
@@ -561,8 +566,9 @@ def vacuum_command(args):
 
 
 def print_file_info(filename, metadata):
+    sha1 = metadata['sha1'] or '-' * 40
     print '%s  %s  %s\t(%s bytes)' % (
-        metadata['sha1'],
+        sha1,
         metadata['modified'].strftime('%Y-%m-%d %H:%M:%S'),
         filename,
         intcomma(metadata['size']))
@@ -579,11 +585,13 @@ def list_command(args):
     count = 0
     size = 0
     for filename in filenames:
+        info = options.listing[filename]
         if args and not prefix_match(args, filename):
             continue
-        print_file_info(filename, options.listing[filename])
+        print_file_info(filename, info)
         count += 1
-        size += options.listing[filename]['size']
+        if info['size']:
+            size += info['size']
     print "%s files: %s Total bytes" % (intcomma(count), intcomma(size))
 
 
