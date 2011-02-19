@@ -27,11 +27,14 @@ div.flap {
   border-radius: 10px 10px 0 0;
   text-align: center;
   -webkit-transform-origin: bottom;
+  -moz-transform-origin: bottom;
 }
 
 body.flipping div.scale-y {
   -webkit-transition: -webkit-transform 0.1s ease-in;
+  -moz-transition: -moz-transform 0.1s ease-in;
   -webkit-transform: scaleY(0);
+  -moz-transform: scaleY(0);
 }
 </style>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
@@ -39,6 +42,21 @@ body.flipping div.scale-y {
 <script type="text/javascript" src="/modernizr-1.6.min.js"></script>
 <script type="text/javascript" src="/lib/beta/js/utils.js"></script>
 <script type="text/javascript">
+var dom = namespace.lookup('org.startpad.dom');
+var format = namespace.lookup('org.startpad.format');
+var doc;
+
+function onReady() {
+  $('#2d div.flap').each(function(i) {
+    var pct = 1.0 - 0.2 * i;
+    $(this).css("-webkit-transform", "scaleY(" + pct + ")");
+    $(this).css("-moz-transform", "scaleY(" + pct + ")");
+});
+  doc = dom.bindIDs();
+  onFlipY();
+  $(doc.scaleY).bind('webkitTransitionEnd transitionend', onFlipY);
+}
+
 function characterRange(range) {
   var first = range.charCodeAt(0);
   var last = range.charCodeAt(1);
@@ -90,31 +108,6 @@ function findPos(ch) {
   }
   throw Error("Invalid Flap character: " + ch);
 }
-</script>
-</head>
-<h1>Split-Flay Testing</h1>
-<h2>A Basic Box</h2>
-<div id="basic" class="flap">A</div>
-
-<h2>2D Transform</h2>
-<div class="flap">A</div>
-<div class="flap" style="-webkit-transform: scaleY(0.9);">A</div>
-<div class="flap" style="-webkit-transform: scaleY(0.7);">A</div>
-<div class="flap" style="-webkit-transform: scaleY(0.5);">A</div>
-<div class="flap" style="-webkit-transform: scaleY(0.3);">A</div>
-<div class="flap" style="-webkit-transform: scaleY(0.1);">A</div>
-<div class="flap" style="-webkit-transform: scaleY(0);">A</div>
-<div id="scaleY" class="flap scale-y">A</div>
-<script>
-var dom = namespace.lookup('org.startpad.dom');
-var format = namespace.lookup('org.startpad.format');
-var doc;
-
-function onReady() {
-  doc = dom.bindIDs();
-  onFlipY();
-  $(doc.scaleY).bind('webkitTransitionEnd', onFlipY);
-}
 
 var msLast;
 var ySeq = '';
@@ -138,12 +131,30 @@ function onFlipY() {
 
 $(document).ready(onReady);
 </script>
+</head>
+<body>
+<h1>Split-Flay Testing</h1>
+<h2>A Basic Box</h2>
+<div id="basic" class="flap">A</div>
 
-<p>scaleY(n) : for n = 1.0 to 0.0</p>
+<h2>2D Transform</h2>
 <div id="flip-speed"></div>
+
+<div id=2d>
+<div class="flap">A</div>
+<div class="flap">A</div>
+<div class="flap">A</div>
+<div class="flap">A</div>
+<div class="flap">A</div>
+<div class="flap">A</div>
+<div class="flap">A</div>
+<div class="flap">A</div>
+<div class="flap">A</div>
+</div>
+
+<div id="scaleY" class="flap scale-y">A</div>
 
 <h2>Split Box</h2>
 
-<body>
 </body>
 </html>
