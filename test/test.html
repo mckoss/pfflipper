@@ -28,14 +28,24 @@ div.flap {
   text-align: center;
   -webkit-transform-origin: bottom;
   -moz-transform-origin: bottom;
+  box-shadow: 2px 2px 2px black;
 }
 
 body.flipping div.scale-y {
-  -webkit-transition: -webkit-transform 0.1s ease-in;
-  -moz-transition: -moz-transform 0.1s ease-in;
+  -webkit-transition-property: -webkit-transform, background-color, color;
+  -webkit-transition-duration: 2s;
+  -webkit-transition-timing-function: ease-in;
   -webkit-transform: scaleY(0);
+
+  -moz-transition-property: -moz-transform, background-color, color;
+  -moz-transition-duration: 2s;
+  -moz-transition-timing-function: ease-in;
   -moz-transform: scaleY(0);
+
+  background-color: #222;
+  color: #888;
 }
+
 </style>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
 <script type="text/javascript" src="/lib/beta/js/json2.min.js"></script>
@@ -47,14 +57,17 @@ var format = namespace.lookup('org.startpad.format');
 var doc;
 
 function onReady() {
+  doc = dom.bindIDs();
+
+  // 2D Samples
   $('#2d div.flap').each(function(i) {
     var pct = 1.0 - 0.2 * i;
     $(this).css("-webkit-transform", "scaleY(" + pct + ")");
     $(this).css("-moz-transform", "scaleY(" + pct + ")");
 });
-  doc = dom.bindIDs();
+
   onFlipY();
-  $(doc.scaleY).bind('webkitTransitionEnd transitionend', onFlipY);
+  $(doc['scale-y-exemplar']).bind('webkitTransitionEnd transitionend', onFlipY);
 }
 
 function characterRange(range) {
@@ -115,14 +128,17 @@ var ySeq = '';
 function onFlipY() {
   var msNow = new Date().getTime();
   var ms = msNow - msLast;
+  if (ms < 20) return;
   msLast = msNow;
+
+  console.log("transitionend: " + ms, this);
   $(doc['flip-speed']).text(format.thousands(1000/ms, 1) + " fps");
 
   if (ySeq == '') {
-    ySeq = letterSequence('x', '2');
+    ySeq = letterSequence('M', '9');
   }
   var ch = ySeq[0];
-  dom.setText(doc.scaleY, ch);
+  $('div.scale-y').text(ch);
   ySeq = ySeq.substr(1);
 
   $(document.body).removeClass('flipping');
@@ -133,12 +149,12 @@ $(document).ready(onReady);
 </script>
 </head>
 <body>
-<h1>Split-Flay Testing</h1>
+<h1>Split-Flap Experiments</h1>
+
 <h2>A Basic Box</h2>
 <div id="basic" class="flap">A</div>
 
 <h2>2D Transform</h2>
-<div id="flip-speed"></div>
 
 <div id=2d>
 <div class="flap">A</div>
@@ -152,7 +168,16 @@ $(document).ready(onReady);
 <div class="flap">A</div>
 </div>
 
-<div id="scaleY" class="flap scale-y">A</div>
+<h2>2D Speed Test</h2>
+
+<div id="flip-speed"></div>
+
+<div id="scale-y-exemplar" class="flap scale-y">A</div>
+<div class="flap scale-y">A</div>
+<div class="flap scale-y">A</div>
+<div class="flap scale-y">A</div>
+<div class="flap scale-y">A</div>
+<div class="flap scale-y">A</div>
 
 <h2>Split Box</h2>
 
