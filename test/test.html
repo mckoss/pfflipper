@@ -5,6 +5,7 @@
 <style>
 body {
   font-family: Arial, Helvetica, sans-serif;
+  font-size: 100%;
 }
 
 div { margin: 0; padding: 0 }
@@ -14,22 +15,21 @@ p { clear: both; }
 h1, h2 { clear: both; }
 
 div.flap {
+  float: left;
+  margin-right: 5px;
   font-size: 400%;
   color: #FFF;
-  overflow:hidden;
-  border-style: solid;
-  border-color:#222;
   background-color: #555;
   width: 1em;
   height: 1em;
-  text-align: center;
+  overflow: hidden;
+  border: 3px solid #222;
   border-radius: 10px 10px 0 0;
+  text-align: center;
   -webkit-transform-origin: bottom;
-  float: left;
-  margin-right: 5px;
 }
 
-div.scaleY {
+body.flipping div.scale-y {
   -webkit-transition: -webkit-transform 0.1s ease-in;
   -webkit-transform: scaleY(0);
 }
@@ -104,7 +104,7 @@ function findPos(ch) {
 <div class="flap" style="-webkit-transform: scaleY(0.3);">A</div>
 <div class="flap" style="-webkit-transform: scaleY(0.1);">A</div>
 <div class="flap" style="-webkit-transform: scaleY(0);">A</div>
-<div id="scaleY" class="flap">A</div>
+<div id="scaleY" class="flap scale-y">A</div>
 <script>
 var dom = namespace.lookup('org.startpad.dom');
 var format = namespace.lookup('org.startpad.format');
@@ -132,8 +132,8 @@ function onFlipY() {
   dom.setText(doc.scaleY, ch);
   ySeq = ySeq.substr(1);
 
-  $(doc.scaleY).removeClass('scaleY');
-  setTimeout(function () {$(doc.scaleY).addClass('scaleY');}, 1);
+  $(document.body).removeClass('flipping');
+  setTimeout(function () {$(document.body).addClass('flipping');}, 1);
 }
 
 $(document).ready(onReady);
