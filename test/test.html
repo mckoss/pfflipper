@@ -54,14 +54,27 @@ div.box div.bottom {
 
 body.scale-y-run div.scale-y {
   -webkit-transition-property: -webkit-transform, background-color, color;
-  -webkit-transition-duration: 0.2s;
+  -webkit-transition-duration: 0.1s;
   -webkit-transition-timing-function: ease-in;
   -webkit-transform: scaleY(0) skewX(-20deg);
 
   -moz-transition-property: -moz-transform, background-color, color;
-  -moz-transition-duration: 0.2s;
+  -moz-transition-duration: 0.1s;
   -moz-transition-timing-function: ease-in;
   -moz-transform: scaleY(0);
+
+  background-color: #222;
+  color: #888;
+}
+
+body.threed-run div.threed {
+  -webkit-transition-property: -webkit-transform, background-color, color;
+  -webkit-transition-duration: 0.1s;
+  -webkit-transform: rotateX(-90deg);
+
+  -moz-transition-property: -moz-transform, background-color, color;
+  -moz-transition-duration: 0.1s;
+  -moz-transform: rotateX(-90deg);
 
   background-color: #222;
   color: #888;
@@ -81,6 +94,7 @@ function onReady() {
   doc = dom.bindIDs();
 
   $(doc.toggle2D).click(toggle2D);
+  $(doc.toggle3D).click(toggle3D);
 
   // 2D Samples
   $('#2d div.flap').each(function(i) {
@@ -98,6 +112,7 @@ function onReady() {
 
   onFlipY();
   $(doc['scale-y-exemplar']).bind('webkitTransitionEnd transitionend', onFlipY);
+  $(doc['threed-exemplar']).bind('webkitTransitionEnd transitionend', onThreeD);
 }
 
 var f2DRunning = false;
@@ -105,6 +120,13 @@ function toggle2D() {
   f2DRunning = !f2DRunning;
   $(doc.toggle2D).text(f2DRunning ? "Stop" : "Start");
   $(document.body)[f2DRunning ? 'addClass' : 'removeClass']('scale-y-run');
+}
+
+var f3DRunning = false;
+function toggle3D() {
+  f3DRunning = !f3DRunning;
+  $(doc.toggle3D).text(f3DRunning ? "Stop" : "Start");
+  $(document.body)[f3DRunning ? 'addClass' : 'removeClass']('threed-run');
 }
 
 function characterRange(range) {
@@ -182,6 +204,28 @@ function onFlipY() {
   setTimeout(function () {$(document.body).addClass('scale-y-run');}, 1);
 }
 
+var msLast3D;
+var ySeq3D = '';
+function onThreeD() {
+  if (!f3DRunning) return;
+  var msNow = new Date().getTime();
+  var ms = msNow - msLast3D;
+  if (ms < 20) return;
+  msLast3D = msNow;
+
+  $(doc['flip-speed3D']).text(format.thousands(1000/ms, 1) + " fps");
+
+  if (ySeq3D == '') {
+    ySeq3D = letterSequence('M', '9');
+  }
+  var ch = ySeq3D[0];
+  $('div.threed').text(ch);
+  ySeq3D = ySeq3D.substr(1);
+
+  $(document.body).removeClass('threed-run');
+  setTimeout(function () {$(document.body).addClass('threed-run');}, 1);
+}
+
 $(document).ready(onReady);
 </script>
 </head>
@@ -230,6 +274,20 @@ $(document).ready(onReady);
 <div class="box"><div class="flap top">A</div></div>
 <div class="box"><div class="flap top">A</div></div>
 </div>
+
+<h2>3D Speed Test</h2>
+
+<button id=toggle3D>Start</button>
+<div id="flip-speed3D"></div>
+
+<div class="box"><div id="threed-exemplar" class="flap threed">A</div></div>
+<div class="box"><div class="flap threed">A</div></div>
+<div class="box"><div class="flap threed">A</div></div>
+<div class="box"><div class="flap threed">A</div></div>
+<div class="box"><div class="flap threed">A</div></div>
+<div class="box"><div class="flap threed">A</div></div>
+<div class="box"><div class="flap threed">A</div></div>
+<div class="box"><div class="flap threed">A</div></div>
 
 <h2>Split Box</h2>
 
