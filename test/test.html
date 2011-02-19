@@ -15,13 +15,10 @@ p { clear: both; }
 h1, h2 { clear: both; }
 
 div.flap {
-  float: left;
-  margin-right: 5px;
-  font-size: 400%;
   color: #FFF;
   background-color: #555;
   width: 1em;
-  height: 1em;
+  height: 0.9em;
   overflow: hidden;
   border: 3px solid #222;
   border-radius: 10px 10px 0 0;
@@ -31,11 +28,35 @@ div.flap {
   box-shadow: 2px 2px 2px black;
 }
 
-body.flipping div.scale-y {
+div.box {
+  font-size: 400%;
+  float: left;
+  position: relative;
+  margin-right: 10px;
+  -webkit-perspective: 200px;
+  width: 1.1em;
+  height: 2em;
+  padding: 3px;
+  border: 1px solid red;
+  background-color: #444;
+}
+
+div.box div.top {
+  position: absolute;
+  top: 3px;
+  left: 0.05em;
+}
+
+div.box div.bottom {
+  position: absolute;
+  bottom: 3px;
+}
+
+body.scale-y-run div.scale-y {
   -webkit-transition-property: -webkit-transform, background-color, color;
   -webkit-transition-duration: 0.2s;
   -webkit-transition-timing-function: ease-in;
-  -webkit-transform: scaleY(0);
+  -webkit-transform: scaleY(0) skewX(-20deg);
 
   -moz-transition-property: -moz-transform, background-color, color;
   -moz-transition-duration: 0.2s;
@@ -59,15 +80,31 @@ var doc;
 function onReady() {
   doc = dom.bindIDs();
 
+  $(doc.toggle2D).click(toggle2D);
+
   // 2D Samples
   $('#2d div.flap').each(function(i) {
-    var pct = 1.0 - 0.2 * i;
-    $(this).css("-webkit-transform", "scaleY(" + pct + ")");
-    $(this).css("-moz-transform", "scaleY(" + pct + ")");
+    var prop = "scaleY(" + (1.0 - 0.2 * i) + ")";
+    $(this).css("-webkit-transform", prop);
+    $(this).css("-moz-transform", prop);
+});
+
+  // 3D Samples
+  $('#3d div.flap').each(function(i) {
+    var prop = "rotateX(-" + (i * 15) + "deg)";
+    $(this).css("-webkit-transform", prop);
+    $(this).css("-moz-transform", prop);
 });
 
   onFlipY();
   $(doc['scale-y-exemplar']).bind('webkitTransitionEnd transitionend', onFlipY);
+}
+
+var f2DRunning = false;
+function toggle2D() {
+  f2DRunning = !f2DRunning;
+  $(doc.toggle2D).text(f2DRunning ? "Stop" : "Start");
+  $(document.body)[f2DRunning ? 'addClass' : 'removeClass']('scale-y-run');
 }
 
 function characterRange(range) {
@@ -126,12 +163,12 @@ var msLast;
 var ySeq = '';
 
 function onFlipY() {
+  if (!f2DRunning) return;
   var msNow = new Date().getTime();
   var ms = msNow - msLast;
   if (ms < 20) return;
   msLast = msNow;
 
-  console.log("transitionend: " + ms, this);
   $(doc['flip-speed']).text(format.thousands(1000/ms, 1) + " fps");
 
   if (ySeq == '') {
@@ -141,8 +178,8 @@ function onFlipY() {
   $('div.scale-y').text(ch);
   ySeq = ySeq.substr(1);
 
-  $(document.body).removeClass('flipping');
-  setTimeout(function () {$(document.body).addClass('flipping');}, 1);
+  $(document.body).removeClass('scale-y-run');
+  setTimeout(function () {$(document.body).addClass('scale-y-run');}, 1);
 }
 
 $(document).ready(onReady);
@@ -152,34 +189,71 @@ $(document).ready(onReady);
 <h1>Split-Flap Experiments</h1>
 
 <h2>A Basic Box</h2>
-<div id="basic" class="flap">A</div>
+<div class=box><div id="basic" class="flap">A</div></div>
 
 <h2>2D Transform</h2>
 
 <div id=2d>
-<div class="flap">A</div>
-<div class="flap">A</div>
-<div class="flap">A</div>
-<div class="flap">A</div>
-<div class="flap">A</div>
-<div class="flap">A</div>
-<div class="flap">A</div>
-<div class="flap">A</div>
-<div class="flap">A</div>
+<div class=box><div class="flap">A</div></div>
+<div class=box><div class="flap">A</div></div>
+<div class=box><div class="flap">A</div></div>
+<div class=box><div class="flap">A</div></div>
+<div class=box><div class="flap">A</div></div>
+<div class=box><div class="flap">A</div></div>
+<div class=box><div class="flap">A</div></div>
+<div class=box><div class="flap">A</div></div>
 </div>
 
 <h2>2D Speed Test</h2>
 
+<button id=toggle2D>Start</button>
 <div id="flip-speed"></div>
 
-<div id="scale-y-exemplar" class="flap scale-y">A</div>
-<div class="flap scale-y">A</div>
-<div class="flap scale-y">A</div>
-<div class="flap scale-y">A</div>
-<div class="flap scale-y">A</div>
-<div class="flap scale-y">A</div>
+<div class="box"><div id="scale-y-exemplar" class="flap scale-y">A</div></div>
+<div class="box"><div class="flap scale-y">A</div></div>
+<div class="box"><div class="flap scale-y">A</div></div>
+<div class="box"><div class="flap scale-y">A</div></div>
+<div class="box"><div class="flap scale-y">A</div></div>
+<div class="box"><div class="flap scale-y">A</div></div>
+<div class="box"><div class="flap scale-y">A</div></div>
+<div class="box"><div class="flap scale-y">A</div></div>
+
+<h2>3D Transform</h2>
+
+<div id=3d>
+<div class="box"><div class="flap top">A</div></div>
+<div class="box"><div class="flap top">A</div></div>
+<div class="box"><div class="flap top">A</div></div>
+<div class="box"><div class="flap top">A</div></div>
+<div class="box"><div class="flap top">A</div></div>
+<div class="box"><div class="flap top">A</div></div>
+<div class="box"><div class="flap top">A</div></div>
+<div class="box"><div class="flap top">A</div></div>
+</div>
 
 <h2>Split Box</h2>
+
+
+
+<!--
+- Box
+  - Back-top
+  - Back-bottom
+  - Flap (2 flaps potentially)
+-->
+
+<h2>Animation (css looping)</h2>
+
+<h2>Downlevel simulation</h2>
+
+<p>Simulate the flap letter changes w/o any transform animations.
+
+- Box
+  - Back-top
+  - Back-bottom
+
+Sequence One (one flap moving):  A/A -> B/A -> BB -> C/B -> C/C (done)
+Sequence Two (two flaps moving): A/A -> B/A -> C/B -> C/C (done)
 
 </body>
 </html>
