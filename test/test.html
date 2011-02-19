@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Split-Flap Tests</title>
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+div.flap {
+  font-size: 400%;
+  color: #FFF;
+  overflow:hidden;
+  border-style: solid;
+  border-color:#222;
+  background-color: #555;
+  width: 1em;
+  text-align: center;
+  border-radius: 10px 10px 0 0;
+  -webkit-transform-origin: bottom;
+  display: inline-block;
+}
+
+div.scaleY {
+  -webkit-transition: -webkit-transform 1s ease-in;
+  -webkit-transform: scaleY(0);
+}
+</style>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script type="text/javascript" src="/lib/beta/js/json2.min.js"></script>
+<script type="text/javascript" src="/modernizr-1.6.min.js"></script>
+<script type="text/javascript" src="/lib/beta/js/utils.js"></script>
+<script type="text/javascript">
+function characterRange(range) {
+  var first = range.charCodeAt(0);
+  var last = range.charCodeAt(1);
+  s = "";
+  for (var i = first; i <= last; i++) {
+    s += String.fromCharCode(i);
+  }
+  return s;
+}
+
+var letters = characterRange('AZ');
+var numbers = characterRange('09');
+var symbols = characterRange('!/') + characterRange(':@') + characterRange('[`') + '~';
+var space = ' ';
+var sets = [letters, numbers, symbols, space];
+
+function letterSequence(start, end) {
+  start = findPos(start);
+  end = findPos(end);
+
+  // Same set - end after start
+  if (start.set == end.set && end.ich >= start.ich) {
+    return start.set.slice(start.ich, end.ich + 1);
+  }
+
+  s = start.set.slice(start.ich, start.set.length);
+
+  // Same set - end before start
+  if (start.set == end.set) {
+    return s + end.set.slice(0, end.ich + 1);
+  }
+
+  if (start.set != space && end.set != space) {
+    s += space;
+  }
+
+  return s + end.set.slice(0, end.ich + 1);
+}
+
+function findPos(ch) {
+  var i, ich;
+
+  ch = ch.toUpperCase();
+  for (i = 0; i < sets.length; i++) {
+    ich = sets[i].indexOf(ch);
+    if (ich != -1) {
+      return {'ich': ich, 'set': sets[i]};
+    }
+  }
+  throw Error("Invalid Flap character: " + ch);
+}
+</script>
+</head>
+<h1>Split-Flay Testing</h1>
+<h2>A Basic Box</h2>
+<div class="flap">A</div>
+
+<h2>2D Transform</h2>
+<div class="flap">A</div>
+<div class="flap" style="-webkit-transform: scaleY(0.9);">A</div>
+<div class="flap" style="-webkit-transform: scaleY(0.7);">A</div>
+<div class="flap" style="-webkit-transform: scaleY(0.5);">A</div>
+<div class="flap" style="-webkit-transform: scaleY(0.3);">A</div>
+<div class="flap" style="-webkit-transform: scaleY(0.1);">A</div>
+<div class="flap" style="-webkit-transform: scaleY(0);">A</div>
+<div id="scaleY" class="flap">A</div>
+<script>
+function scaleY() {
+  $('#scaleY').addClass('scaleY');
+}
+
+$(document).ready(scaleY);
+</script>
+
+<p>scaleY(n) : for n = 1.0 to 0.0</p>
+
+<h2>Split Box</h2>
+
+<body>
+</body>
+</html>
