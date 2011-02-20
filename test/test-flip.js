@@ -37,10 +37,14 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
                     ['a|', 'fill',   'a         '],
                     ['|a', 'fill',   '         a'],
                     ['|a|', 'fill',  '    a     '],
+                    ['a|b', 'fill',  'a        b'],
+
+                    ['hello | world', 'fill',    'hell world'],
 
                     ['abcdefghijkl', 'left',   'abcdefghij'],
                     ['abcdefghijkl', 'right',  'cdefghijkl'],
                     ['abcdefghijkl', 'center', 'bcdefghijk']
+
 
                 ];
             for (var i = 0; i < tests.length; i++) {

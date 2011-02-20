@@ -110,7 +110,7 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
                 // space available.
                 if (prefix.length + result.length > len) {
                     return prefix.slice(0, len - result.length - sep.length) +
-                           result;
+                           sep + result;
                 }
                 result = prefix + result;
                 if (i >= 1) {
