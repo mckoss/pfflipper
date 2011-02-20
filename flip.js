@@ -116,6 +116,10 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
                 if (i >= 1) {
                     partsLen -= parts[i].length;
                     padding = (len - result.length) - partsLen;
+                    if (padding <= 0 && parts[i].length == 0) {
+                        sep = '';
+                        continue;
+                    }
                     pad = padding > 0 ? Math.ceil(padding / i) : 1;
                     sep = format.repeat(' ', pad);
                 }
