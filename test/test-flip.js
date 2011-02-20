@@ -33,7 +33,7 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
                     ['a', 'left',    'a         '],
                     ['a', 'right',   '         a'],
                     ['a', 'center',  '    a     '],
-                    ['a', 'fill',    '         a'],
+                    ['a', 'fill',    'a         '],
                     ['a|', 'fill',   'a         '],
                     ['|a', 'fill',   '         a'],
                     ['|a|', 'fill',  '    a     '],
