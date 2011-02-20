@@ -1,5 +1,6 @@
 namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
     var clientLib = namespace.lookup('com.pageforest.client'),
+        base = namespace.lookup('org.startpad.base'),
         dom = namespace.lookup('org.startpad.dom'),
         format = namespace.lookup('org.startpad.format'),
         doc;
@@ -66,6 +67,42 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
         }
         throw Error("Invalid Flap character: " + ch);
     }
+
+    /* =================================================
+       Board - Flap Board
+       ================================================= */
+
+    function Grid(rows, cols, options) {
+        this.rows = rows;
+        this.cols = cols;
+        this.messages = [];
+        this.current = -1;
+        this.aligned = 'center';
+        base.extendObject(this, options);
+    }
+
+    Grid.methods({
+        addMessage: function(s) {
+            this.messages.push(s);
+        },
+
+        getBoard: function(message) {
+            var lines = message.split('\n');
+            for (var i = 0; i < lines.length; i++) {
+                lines = base.strip(lines);
+                if (line.length
+            }
+            while (lines[0] == '') {
+                lines.shift();
+            }
+            while (lines[lines.length - 1] == '') {
+                lines.pop();
+            }
+        },
+
+        setMessage: function(i) {
+        },
+    });
 
     ns.extend({
         'onReady': onReady,
