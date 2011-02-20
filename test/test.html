@@ -8,37 +8,40 @@ body {
   font-size: 100%;
 }
 
-div { margin: 0; padding: 0 }
+div { margin: 0; padding: 0; }
 
 p { clear: both; }
 
 h1, h2 { clear: both; }
 
-div.flap {
-  color: #FFF;
-  background-color: #555;
-  width: 1em;
-  height: 0.9em;
-  overflow: hidden;
-  border: 3px solid #222;
-  border-radius: 10px 10px 0 0;
-  text-align: center;
-  -webkit-transform-origin: bottom;
-  -moz-transform-origin: bottom;
-  box-shadow: 2px 2px 2px black;
+div.board {
+  font-size: 400%;
 }
 
 div.box {
-  font-size: 400%;
   float: left;
   position: relative;
   margin-right: 10px;
   -webkit-perspective: 200px;
   width: 1.1em;
-  height: 2em;
+  height: 1.5em;
   padding: 3px;
-  border: 1px solid red;
   background-color: #444;
+}
+
+div.flap {
+  color: #FFF;
+  background-color: #555;
+  width: 1em;
+  height: 0.8em;
+  overflow: hidden;
+  border: 2px solid #222;
+  border-radius: 10px 10px 0 0;
+  text-align: center;
+  -webkit-transform-origin: bottom;
+  -moz-transform-origin: bottom;
+  box-shadow: 2px 2px 2px black;
+  vertical-align: text-top;
 }
 
 div.box div.top {
@@ -233,11 +236,13 @@ $(document).ready(onReady);
 <h1>Split-Flap Experiments</h1>
 
 <h2>A Basic Box</h2>
+<div class=board>
 <div class=box><div id="basic" class="flap">A</div></div>
+</div>
 
 <h2>2D Transform</h2>
 
-<div id=2d>
+<div class=board id=2d>
 <div class=box><div class="flap">A</div></div>
 <div class=box><div class="flap">A</div></div>
 <div class=box><div class="flap">A</div></div>
@@ -253,6 +258,7 @@ $(document).ready(onReady);
 <button id=toggle2D>Start</button>
 <div id="flip-speed"></div>
 
+<div class=board>
 <div class="box"><div id="scale-y-exemplar" class="flap scale-y">A</div></div>
 <div class="box"><div class="flap scale-y">A</div></div>
 <div class="box"><div class="flap scale-y">A</div></div>
@@ -261,10 +267,11 @@ $(document).ready(onReady);
 <div class="box"><div class="flap scale-y">A</div></div>
 <div class="box"><div class="flap scale-y">A</div></div>
 <div class="box"><div class="flap scale-y">A</div></div>
+</div>
 
 <h2>3D Transform</h2>
 
-<div id=3d>
+<div class=board id=3d>
 <div class="box"><div class="flap top">A</div></div>
 <div class="box"><div class="flap top">A</div></div>
 <div class="box"><div class="flap top">A</div></div>
@@ -280,6 +287,7 @@ $(document).ready(onReady);
 <button id=toggle3D>Start</button>
 <div id="flip-speed3D"></div>
 
+<div class=board>
 <div class="box"><div id="threed-exemplar" class="flap threed">A</div></div>
 <div class="box"><div class="flap threed">A</div></div>
 <div class="box"><div class="flap threed">A</div></div>
@@ -288,6 +296,7 @@ $(document).ready(onReady);
 <div class="box"><div class="flap threed">A</div></div>
 <div class="box"><div class="flap threed">A</div></div>
 <div class="box"><div class="flap threed">A</div></div>
+</div>
 
 <h2>Split Box</h2>
 
@@ -301,6 +310,8 @@ $(document).ready(onReady);
 -->
 
 <h2>Animation (css looping)</h2>
+
+<h2>SVG Animation</h2>
 
 <h2>Downlevel simulation</h2>
 
