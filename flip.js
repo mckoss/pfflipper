@@ -181,6 +181,7 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
 
     ns.extend({
         'onReady': onReady,
-        'letterSequence': letterSequence
+        'letterSequence': letterSequence,
+        'fillText': fillText
     });
 });
