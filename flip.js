@@ -14,8 +14,6 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
 
     function onReady() {
         doc = dom.bindIDs();
-        $(doc['scale-y-exemplar']).bind('webkitTransitionEnd transitionend', onFlipY);
-        $(doc['threed-exemplar']).bind('webkitTransitionEnd transitionend', onThreeD);
     }
 
     // Given two characters - return string on inclusive characters.
@@ -68,6 +66,65 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
         throw Error("Invalid Flap character: " + ch);
     }
 
+
+    // Return string exactly len characters long - from source
+    // text.
+    // alignment: 'left' (default), 'center', 'right', or 'fill'
+    // If 'fill', expect a single '|' character in the string which
+    // will be filled with padding spaces as needed (right string
+    // has priority over left string.
+    fillText(text, len, alignment) {
+        var padding,
+            left,
+            right,
+            leftPad = {'left': 0, 'right': 1, 'center': 0.5},
+            parts,
+            i,
+            sep;
+
+        text = text.toString();
+        alignment = alignment || 'left';
+        padding = len - text.length;
+
+        if (alignment == 'fill') {
+            parts = text.split(/\s*\|\s*/);
+            // Minimum one space between each part
+            partsLen = parts.length -1 ;
+            for (i = 0; i < parts.length; i++) {
+                partsLen += parts[i].length;
+            }
+            result = ""
+            sep = '';
+            for (i = parts.length - 1; i >= 0; i--) {
+                prefix = parts[i] + sep;
+                // The first truncated part is left justified in the
+                // space available.
+                if (prefix.length + result.length > len) {
+                    return prefix.slice(0, len - result.length - sep.length) +
+                           result;
+                }
+                result = prefix + result;
+                if (i >= 1) {
+                    partsLen -= parts[i];
+                    padding = (len - result.length) - partsLen;
+                    pad = padding > 0 ? Math.ceil(padding / i)) : 1;
+                    sep = format.repeat(' ', pad);
+                }
+            }
+            return result;
+        }
+
+        // Adding padding to fille string
+        left = Math.floor(padding * leftPad[alignment]);
+        if (padding >= 0) {
+            right = padding - left;
+            return format.repeat(' ', left) + text + format.repeat(' ', right));
+        }
+
+        // Return just a slice of the string.
+        return text.slice(-left, len);
+    }
+
     /* =================================================
        Board - Flap Board
        ================================================= */
@@ -77,7 +134,8 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
         this.cols = cols;
         this.messages = [];
         this.current = -1;
-        this.aligned = 'center';
+        this.window = 2;
+        this.aligned = 'fill';
         base.extendObject(this, options);
     }
 
@@ -87,7 +145,8 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
         },
 
         getBoard: function(message) {
-            var lines = message.split('\n');
+            var lines = message.split('\n'),
+                board = [];
             for (var i = 0; i < lines.length; i++) {
                 lines = base.strip(lines);
                 if (line.length
@@ -98,6 +157,17 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             while (lines[lines.length - 1] == '') {
                 lines.pop();
             }
+            lines = lines.slice(0, rows);
+            cExtra = rows - lines.length;
+            for (row = 0; row < rows; row++) {
+                board.push(this.align(
+                if (row <= cExtra / 2) {
+                    board.push(format.repeat(' ', cols);
+                    continue;
+                }
+
+            }
+
         },
 
         setMessage: function(i) {
