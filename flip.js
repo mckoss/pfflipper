@@ -5,6 +5,18 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
         format = namespace.lookup('org.startpad.format'),
         doc;
 
+    // Given two characters - return string on inclusive characters.
+    function characterRange(range) {
+        var first = range.charCodeAt(0),
+            last = range.charCodeAt(1),
+            s = "";
+
+        for (var i = first; i <= last; i++) {
+            s += String.fromCharCode(i);
+        }
+        return s;
+    }
+
     var letters = characterRange('AZ'),
         numbers = characterRange('09'),
         symbols = characterRange('!/') + characterRange(':@') + characterRange('[`') + '~',
@@ -16,20 +28,25 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
         doc = dom.bindIDs();
     }
 
-    // Given two characters - return string on inclusive characters.
-    function characterRange(range) {
-        var first = range.charCodeAt(0);
-        var last = range.charCodeAt(1);
-        s = "";
-        for (var i = first; i <= last; i++) {
-          s += String.fromCharCode(i);
+    // Return {ich:, set:} for the given character.
+    function findPos(ch) {
+        var i, ich;
+
+        ch = ch.toUpperCase();
+        for (i = 0; i < sets.length; i++) {
+            ich = sets[i].indexOf(ch);
+            if (ich != -1) {
+                return {'ich': ich, 'set': sets[i]};
+            }
         }
-        return s;
+        throw new Error("Invalid Flap character: " + ch);
     }
 
     // Return the letter sequence needed to go from start to end
     // including skipping between letter sets.
     function letterSequence(start, end) {
+        var s;
+
         start = findPos(start);
         end = findPos(end);
 
@@ -52,35 +69,24 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
         return s + end.set.slice(0, end.ich + 1);
     }
 
-    // Return {ich:, set:} for the given character.
-    function findPos(ch) {
-        var i, ich;
-
-        ch = ch.toUpperCase();
-        for (i = 0; i < sets.length; i++) {
-          ich = sets[i].indexOf(ch);
-          if (ich != -1) {
-            return {'ich': ich, 'set': sets[i]};
-          }
-        }
-        throw Error("Invalid Flap character: " + ch);
-    }
-
-
     // Return string exactly len characters long - from source
     // text.
     // alignment: 'left' (default), 'center', 'right', or 'fill'
     // If 'fill', expect a single '|' character in the string which
     // will be filled with padding spaces as needed (right string
     // has priority over left string.
-    fillText(text, len, alignment) {
+    function fillText(text, len, alignment) {
         var padding,
             left,
             right,
             leftPad = {'left': 0, 'right': 1, 'center': 0.5},
             parts,
             i,
-            sep;
+            sep,
+            pad,
+            partsLen,
+            result,
+            prefix;
 
         text = text.toString();
         alignment = alignment || 'left';
@@ -89,11 +95,11 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
         if (alignment == 'fill') {
             parts = text.split(/\s*\|\s*/);
             // Minimum one space between each part
-            partsLen = parts.length -1 ;
+            partsLen = parts.length - 1;
             for (i = 0; i < parts.length; i++) {
                 partsLen += parts[i].length;
             }
-            result = ""
+            result = "";
             sep = '';
             for (i = parts.length - 1; i >= 0; i--) {
                 prefix = parts[i] + sep;
@@ -107,7 +113,7 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
                 if (i >= 1) {
                     partsLen -= parts[i];
                     padding = (len - result.length) - partsLen;
-                    pad = padding > 0 ? Math.ceil(padding / i)) : 1;
+                    pad = padding > 0 ? Math.ceil(padding / i) : 1;
                     sep = format.repeat(' ', pad);
                 }
             }
@@ -118,7 +124,7 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
         left = Math.floor(padding * leftPad[alignment]);
         if (padding >= 0) {
             right = padding - left;
-            return format.repeat(' ', left) + text + format.repeat(' ', right));
+            return format.repeat(' ', left) + text + format.repeat(' ', right);
         }
 
         // Return just a slice of the string.
@@ -149,7 +155,6 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
                 board = [];
             for (var i = 0; i < lines.length; i++) {
                 lines = base.strip(lines);
-                if (line.length
             }
             while (lines[0] == '') {
                 lines.shift();
@@ -157,12 +162,12 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             while (lines[lines.length - 1] == '') {
                 lines.pop();
             }
-            lines = lines.slice(0, rows);
-            cExtra = rows - lines.length;
-            for (row = 0; row < rows; row++) {
-                board.push(this.align(
+            lines = lines.slice(0, this.rows);
+            var cExtra = this.rows - lines.length;
+            for (var row = 0; row < this.rows; row++) {
+                board.push(fillText());
                 if (row <= cExtra / 2) {
-                    board.push(format.repeat(' ', cols);
+                    board.push(format.repeat(' ', this.cols));
                     continue;
                 }
 
@@ -171,7 +176,7 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
         },
 
         setMessage: function(i) {
-        },
+        }
     });
 
     ns.extend({
