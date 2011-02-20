@@ -94,8 +94,7 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
 
         if (alignment == 'fill') {
             parts = text.split(/\s*\|\s*/);
-            // Minimum one space between each part
-            partsLen = parts.length - 1;
+            partsLen = 0;
             for (i = 0; i < parts.length; i++) {
                 partsLen += parts[i].length;
             }
@@ -111,7 +110,7 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
                 }
                 result = prefix + result;
                 if (i >= 1) {
-                    partsLen -= parts[i];
+                    partsLen -= parts[i].length;
                     padding = (len - result.length) - partsLen;
                     pad = padding > 0 ? Math.ceil(padding / i) : 1;
                     sep = format.repeat(' ', pad);
@@ -128,7 +127,8 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
         }
 
         // Return just a slice of the string.
-        return text.slice(-left, len);
+        left = -left;
+        return text.slice(left, left + len);
     }
 
     /* =================================================
