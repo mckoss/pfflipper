@@ -94,6 +94,10 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
 
         if (alignment == 'fill') {
             parts = text.split(/\s*\|\s*/);
+            // Left align if only one part given
+            if (parts.length == 1) {
+                parts.push('');
+            }
             partsLen = 0;
             for (i = 0; i < parts.length; i++) {
                 partsLen += parts[i].length;
