@@ -8,18 +8,27 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         doc,
         clickHandlers,
         fbUI,
-        rows = 5, cols = 21,
-        fPlaying = false;
+        rows = 6, cols = 21,
+        msFlip = 1000,
+        fPlaying = false,
+        messageSplit = /\n-+\n/;
 
     clickHandlers = {
         playPause: function() {
             fPlaying = !fPlaying;
             $(document.body)[fPlaying ? 'addClass' : 'removeClass']('playing');
-            $(document.body)[fPlaying ? 'addClass' : 'removeClass']('flipping');
+            if (fPlaying) {
+                fbUI.setMessages($(doc.messages).val().split(messageSplit));
+            }
+            fbUI.play(fPlaying);
             return false;
         },
 
         forward: function() {
+            fbUI.advance();
+            if (fPlaying) {
+                setTimeout(clickHandlers.forward, msFlip);
+            }
             return false;
         },
 
@@ -48,9 +57,10 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
 
     function setDoc(json) {
         if (json.blob.text) {
-            $('#input').val(json.blob.text);
+            $(doc.messages).val(json.blob.text);
         }
         $(doc.title).text(json.title);
+        fbUI.setMessages(json.blob.text.split(messageSplit));
     }
 
     function getDoc() {
@@ -58,7 +68,7 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
             "readers" : ["public"],
             "blob": {
                 version: 1,
-                text: $('#input').val()
+                text: $(doc.messages).val()
             }
         };
     }
@@ -70,6 +80,7 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
     function FlapBoardUI(elem, rows, cols) {
         this.elem = elem;
         this.fb = new flip.FlapBoard(rows, cols);
+        this.fPlaying = false;
         this.build();
     }
 
@@ -102,8 +113,34 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
                     self.cells.push([]);
                     rowLast = row;
                 }
-                self.cells[row].push({current: current, next: next});
+                self.cells[row].push({
+                    cell: cell,
+                    current: current,
+                    next: next
+                });
             });
+        },
+
+        // An array of messages to display
+        setMessages: function(messages) {
+            this.messages = messages;
+            this.setCurrent(messages[0]);
+        },
+
+        setCurrent: function(message) {
+            var self = this;
+            self.fb.setCurrent(message);
+            self.fb.each(function (row, col, letter) {
+                var cell = self.cells[row][col];
+                $(cell.current).text(letter);
+            });
+        },
+
+        play: function(fPlay) {
+            this.fPlay = fPlay;
+            if (fPlay) {
+                $(this.elem)[fPlay ? 'addClass' : 'removeClass']('flipping');
+            }
         }
     });
 
@@ -112,6 +149,7 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         addClickHandlers();
 
         fbUI = new FlapBoardUI(doc.board, rows, cols);
+        fbUI.setMessages($(doc.messages).val().split(messageSplit));
 
         client = new clientLib.Client(ns);
         if (doc.title) {

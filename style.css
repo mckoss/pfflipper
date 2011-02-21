@@ -51,17 +51,22 @@ div.cell {
   border: 1px solid black;
 }
 
-div.cell > div { position:absolute; width: 100%; }
-div.current { height: 100%; background-color: red; }
-div.next { height: 0; z-index: 1; background-color: green; }
+div.cell > div {
+  position:absolute;
+  width: 100%;
+  color: white;
+  text-align: center;
+  font-size: 48px;
+}
+div.current { height: 100%; }
+div.next { height: 0; z-index: 1; background-color: red; }
 
-body.flipping div.next {
+body.flipping div.cell.active div.next {
   -webkit-transition: height 1s ease-in;
   height: 100%;
 }
 
 #nav { margin: 2px 0; text-align: center; position: relative; }
-
 #nav a {
   background-image: url('images/icons.jpg');
   display: inline-block;

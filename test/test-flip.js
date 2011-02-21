@@ -128,7 +128,7 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
                 [1, 2, 'A'], [1, 3, 'A'], [1, 4, 'I'], [1, 5, 'J'],
                 [1, 6, 'A'], [2, 4, 'P']
             ];
-            fb.forWindow(function (row, col, text) {
+            fb.eachWindow(function (row, col, text) {
                 test = seq[count];
                 ut.assertEq(row, test[0]);
                 ut.assertEq(col, test[1]);

@@ -262,17 +262,18 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
         },
 
         each: function(fn) {
-            var row, col;
+            var row, col, line;
 
             for (row = 0; row < this.rows; row++) {
+                line = this.currentBoard[row];
                 for (col = 0; col < this.cols; col++) {
-                    fn.call(this, row, col);
+                    fn.call(this, row, col, line[col]);
                 }
             }
         },
 
         // Enumerate all the cells whose window string has changed in the last cycle.
-        forWindow: function(fn) {
+        eachWindow: function(fn) {
             var minFilter;
 
             minFilter = this.position - this.window + 1;
