@@ -57,7 +57,9 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
             var fb = new flip.FlapBoard(5, 10, {window: 1}),
                 blank = '          ',
                 expect,
-                i;
+                i,
+                seq,
+                test;
 
             ut.assertEq(fb.rows, 5);
             ut.assertEq(fb.cols, 10);
@@ -84,6 +86,33 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
                 ut.assertEq(fb.currentBoard[i], fb.targetBoard[i]);
             }
 
+            fb.setTarget('|hello|\n|mum|');
+            seq = [
+                ['    HI    ', '   MOM    '],
+                ['  AAIJA   ', '   MPM    '],
+                ['  BBJKB   ', '   MQM    '],
+                ['  CCKLC   ', '   MRM    '],
+                ['  DDLLD   ', '   MSM    '],
+                ['  EELLE   ', '   MTM    '],
+                ['  FELLF   ', '   MUM    '],
+                ['  GELLG   ', '   MUM    '],
+                ['  HELLH   ', '   MUM    '],
+                ['  HELLI   ', '   MUM    '],
+                ['  HELLJ   ', '   MUM    '],
+                ['  HELLK   ', '   MUM    '],
+                ['  HELLL   ', '   MUM    '],
+                ['  HELLM   ', '   MUM    '],
+                ['  HELLN   ', '   MUM    '],
+                ['  HELLO   ', '   MUM    ']
+            ];
+            for (i = 0; i < seq.length; i++) {
+                test = seq[i];
+                ut.assertEq(fb.currentBoard[1], test[0]);
+                ut.assertEq(fb.currentBoard[2], test[1]);
+                ut.assertEq(fb.isComplete(), false);
+                fb.advance();
+            }
+            ut.assertEq(fb.isComplete(), true);
         });
     };
 });
