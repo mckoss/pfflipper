@@ -136,6 +136,24 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
                 count++;
             });
             ut.assertEq(count, 6);
+
+            fb.window = 2;
+            fb.setCurrent(start).setTarget(end);
+            ut.assertEq(fb.lastPosition, 17);
+            count = 0;
+            fb.advance();
+            seq = [
+                [1, 2, ' A'], [1, 3, ' A'], [1, 4, 'HI'], [1, 5, 'IJ'],
+                [1, 6, ' A'], [2, 4, 'OP']
+            ];
+            fb.eachWindow(function (row, col, text) {
+                test = seq[count];
+                ut.assertEq(row, test[0]);
+                ut.assertEq(col, test[1]);
+                ut.assertEq(text, test[2]);
+                count++;
+            });
+            ut.assertEq(count, 6);
         });
     };
 });

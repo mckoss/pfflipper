@@ -252,11 +252,14 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             }
         },
 
-        getWindow: function(row, col) {
+        getWindow: function(row, col, position) {
+            if (position == undefined) {
+                position = this.position;
+            }
             var seq = this.sequences[row][col],
                 last = seq.length - 1,
-                i = Math.min(last, this.position - this.window + 1),
-                j = Math.min(last, this.position);
+                i = Math.min(last, position - this.window + 1),
+                j = Math.min(last, position);
 
             return seq.slice(i, j + 1);
         },
@@ -278,8 +281,9 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
 
             minFilter = this.position - this.window + 1;
             this.each(function (row, col) {
-                if (this.sequences[row][col].length > minFilter) {
-                    fn.call(this, row, col, this.getWindow(row, col));
+                var text = this.getWindow(row, col);
+                if (this.position == 0 || text != this.getWindow(row, col, this.position - 1)) {
+                    fn.call(this, row, col, text);
                 }
             });
         }
