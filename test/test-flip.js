@@ -52,5 +52,20 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
                 ut.assertEq(flip.fillText(test[0], 10, test[1]), test[2]);
             }
         });
+
+        ts.addTest("FlapBoard", function(ut) {
+            var fb = new flip.FlapBoard(5, 10),
+                i;
+
+            ut.assertEq(fb.rows, 5);
+            ut.assertEq(fb.cols, 10);
+            ut.assertEq(fb.currentBoard.length, 5);
+            ut.assertEq(fb.targetBoard.length, 5);
+            ut.assertEq(fb.isComplete(), false);
+
+            for (i = 0; i < 5; i++) {
+                ut.assertEq(fb.currentBoard[i], '          ');
+            }
+        });
     };
 });

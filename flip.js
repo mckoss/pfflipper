@@ -179,7 +179,7 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             // Ignore leading and trailing white space, and remove
             // leading and trailing blank lines.
             for (i = 0; i < lines.length; i++) {
-                lines = base.strip(lines);
+                lines[i] = base.strip(lines[i]);
             }
             while (lines[0] == '') {
                 lines.shift();
@@ -191,11 +191,11 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             // Center available lines vertically
             lines = lines.slice(0, this.rows);
             padding = this.rows - lines.length;
-            for (i = 0; i < padding / 2; i++) {
+            for (i = 0; i < Math.floor(padding / 2); i++) {
                 lines.unshift('');
             }
             for (i = 0; i < Math.ceil(padding / 2); i++) {
-                line.push('');
+                lines.push('');
             }
 
             for (i = 0; i < lines.length; i++) {
@@ -278,6 +278,7 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
     ns.extend({
         'onReady': onReady,
         'letterSequence': letterSequence,
-        'fillText': fillText
+        'fillText': fillText,
+        'FlapBoard': FlapBoard
     });
 });
