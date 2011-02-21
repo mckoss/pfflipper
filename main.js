@@ -9,12 +9,15 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
 
     clickHandlers = {
         playPause: function() {
+            return false;
         },
 
         forward: function() {
+            return false;
         },
 
         back: function() {
+            return false;
         },
 
         displayLink: function() {
@@ -30,7 +33,7 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
             if (clickHandlers.hasOwnProperty(id)) {
                 $(doc[id]).click(clickHandlers[id]);
                 if (doc[id].tagName == 'A') {
-                    doc[id].href = "javascript:void(0);";
+                    doc[id].href = "#";
                 }
             }
         }
@@ -48,8 +51,8 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
     function setDoc(json) {
         if (json.blob.text) {
             $('#input').val(json.blob.text);
-            clickHandlers.play();
         }
+        $(doc.title).text(json.title);
     }
 
     function getDoc() {
@@ -62,10 +65,15 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         };
     }
 
+    function onSaveSuccess() {
+        $(doc.title).text(client.meta.title);
+    }
+
     ns.extend({
         'onReady': onReady,
         'getDoc': getDoc,
-        'setDoc': setDoc
+        'setDoc': setDoc,
+        'onSaveSuccess': onSaveSuccess
     });
 
 });
