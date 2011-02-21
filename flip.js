@@ -162,11 +162,13 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             delete this.sequences;
             this.position = 0;
             this.lastPosition = 0;
+            return this;
         },
 
         setTarget: function(s) {
             this.target = s;
             this.recalc();
+            return this;
         },
 
         // Return an arrow or *rows* strings, each *cols* in length.
@@ -266,8 +268,8 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             minFilter = this.position - this.window + 1;
             for (row = 0; row < this.rows; row++) {
                 for (col = 0; col < this.cols; col++) {
-                    if (this.sequences[row][col].length >= minFilter) {
-                        fn(row, col, this.getWindow(row, col));
+                    if (this.sequences[row][col].length > minFilter) {
+                        fn.call(this, row, col, this.getWindow(row, col));
                     }
                 }
             }

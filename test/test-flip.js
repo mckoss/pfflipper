@@ -59,25 +59,29 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
                 expect,
                 i,
                 seq,
-                test;
+                test,
+                start = '|hi|\n|mom|',
+                end = '|hello|\n|mum|';
 
             ut.assertEq(fb.rows, 5);
             ut.assertEq(fb.cols, 10);
             ut.assertEq(fb.currentBoard.length, 5);
             ut.assertEq(fb.targetBoard.length, 5);
+            ut.assertEq(fb.position, 0);
+            ut.assertEq(fb.lastPosition, 1);
             ut.assertEq(fb.isComplete(), false);
 
             for (i = 0; i < 5; i++) {
                 ut.assertEq(fb.currentBoard[i], blank);
             }
 
-            fb.setCurrent('|hi|\n|mom|');
+            fb.setCurrent(start);
             expect = [blank, '    HI    ', '   MOM    ', blank, blank];
             for (i = 0; i < 5; i++) {
                 ut.assertEq(fb.currentBoard[i], expect[i]);
             }
 
-            fb.setTarget('|hi|\n|mom|');
+            fb.setTarget(start);
             ut.assertEq(fb.isComplete(), false);
             fb.advance();
             ut.assertEq(fb.isComplete(), true);
@@ -86,7 +90,7 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
                 ut.assertEq(fb.currentBoard[i], fb.targetBoard[i]);
             }
 
-            fb.setTarget('|hello|\n|mum|');
+            fb.setTarget(end);
             seq = [
                 ['    HI    ', '   MOM    '],
                 ['  AAIJA   ', '   MPM    '],
@@ -105,6 +109,8 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
                 ['  HELLN   ', '   MUM    '],
                 ['  HELLO   ', '   MUM    ']
             ];
+            ut.assertEq(fb.position, 0);
+            ut.assertEq(fb.lastPosition, 16);
             for (i = 0; i < seq.length; i++) {
                 test = seq[i];
                 ut.assertEq(fb.currentBoard[1], test[0]);
@@ -113,6 +119,23 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
                 fb.advance();
             }
             ut.assertEq(fb.isComplete(), true);
+
+            fb.setCurrent(start).setTarget(end);
+            ut.assertEq(fb.lastPosition, 16);
+            var count = 0;
+            fb.advance();
+            seq = [
+                [1, 2, 'A'], [1, 3, 'A'], [1, 4, 'I'], [1, 5, 'J'],
+                [1, 6, 'A'], [2, 4, 'P']
+            ];
+            fb.forWindow(function (row, col, text) {
+                test = seq[count];
+                ut.assertEq(row, test[0]);
+                ut.assertEq(col, test[1]);
+                ut.assertEq(text, test[2]);
+                count++;
+            });
+            ut.assertEq(count, 6);
         });
     };
 });
