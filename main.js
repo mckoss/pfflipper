@@ -82,7 +82,7 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         this.fPlaying = false;
         this.iMessage = 0;
         this.messages = [];
-        this.msFlip = 1000;
+        this.msFlip = 200;
         this.build();
         setInterval(this.flip.fnMethod(this), this.msFlip);
     }
@@ -99,7 +99,7 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
             rcCell = [0, 0].concat(cellSize);
             rcCell = vector.rcExpand(rcCell, [-2, -2]);
             innerSize = vector.size(rcCell);
-            fontSize = innerSize[0] - 1;
+            fontSize = Math.floor(Math.min(innerSize[0] - 1, innerSize[1] / 1.2)) + 'px';
             self.cells = [];
 
             self.fb.each(function(row, col, letter) {
@@ -109,8 +109,10 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
                     pos = vector.mult([col, row], cellSize),
                     rect = pos.concat(vector.add(pos, innerSize));
 
-                $(current).addClass('current');
-                $(next).addClass('next');
+                $(current).addClass('current')
+                    .css('line-height', innerSize[1] + 'px');
+                $(next).addClass('next')
+                    .css('line-height', innerSize[1] + 'px');
 
                 dom.setRect(cell, rect);
                 $(cell).css('font-size', fontSize)

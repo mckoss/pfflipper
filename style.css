@@ -62,7 +62,7 @@ div.current { height: 100%; }
 div.next { height: 0; z-index: 1; }
 
 div.flipping div.cell.active div.next {
-  -webkit-transition: height 0.3s ease-in;
+  -webkit-transition: height 0.2s ease-in;
   height: 100%;
 }
 
