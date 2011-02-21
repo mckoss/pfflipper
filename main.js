@@ -9,7 +9,6 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         clickHandlers,
         fbUI,
         rows = 6, cols = 21,
-        msFlip = 1000,
         fPlaying = false,
         messageSplit = /\n-+\n/;
 
@@ -81,7 +80,9 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         this.fPlaying = false;
         this.iMessage = 0;
         this.messages = [];
+        this.msFlip = 150;
         this.build();
+        setInterval(this.flip.fnMethod(this), this.msFlip);
     }
 
     FlapBoardUI.methods({
@@ -124,14 +125,14 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         // An array of messages to display
         setMessages: function(messages) {
             this.messages = messages;
-            this.setCurrent();
+            this.setTarget();
         },
 
         advance: function(n) {
-            this.setCurrent(this.iMessage + n);
+            this.setTarget(this.iMessage + n);
         },
 
-        setCurrent: function(i) {
+        setTarget: function(i) {
             var self = this,
                 message;
 
@@ -141,19 +142,49 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
 
             message = this.messages[this.iMessage];
 
-            self.fb.setCurrent(message);
-            self.fb.each(function (row, col, letter) {
-                var cell = self.cells[row][col];
-                $(cell.current).text(letter);
-            });
+            self.fb.setTarget(message);
         },
 
         play: function(fPlay) {
             this.fPlay = fPlay;
-            if (fPlay) {
-                $(this.elem)[fPlay ? 'addClass' : 'removeClass']('flipping');
+        },
+
+        // Called on a timer - should initiate animation to next letters.
+        // In order to restart the css transition, we do these steps:
+        // - Update current and next characters
+        // - Turn off class elem.flipping (just displays current)
+        // - Return to browser
+        // - Turn on class elem.flipping
+        // - Return to browser
+        // the elem.flipping class and return
+        flip: function() {
+            var self = this;
+
+            if (self.fb.isComplete()) {
+                return;
             }
+
+            self.fb.advance();
+
+            self.fb.eachWindow(function (row, col, letters) {
+                var cell = self.cells[row][col];
+                $(cell.current).text(letters[0]);
+                if (letters.length > 1) {
+                    $(cell.cell).addClass('active');
+                    $(cell.next).text(letters[1]);
+                } else {
+                    $(cell.cell).removeClass('active');
+                }
+            });
+
+            // Return to browser with flipping removed - then set again
+            // to start next animation transitions.
+            $(self.elem).removeClass('flipping');
+            setTimeout(function() {
+                $(self.elem).addClass('flipping');
+            }, 1);
         }
+
     });
 
     function onReady() {

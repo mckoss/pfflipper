@@ -59,10 +59,10 @@ div.cell > div {
   font-size: 48px;
 }
 div.current { height: 100%; }
-div.next { height: 0; z-index: 1; background-color: red; }
+div.next { height: 0; z-index: 1; background-color: red; overflow: hidden; }
 
-body.flipping div.cell.active div.next {
-  -webkit-transition: height 1s ease-in;
+div.flipping div.cell.active div.next {
+  -webkit-transition: height 0.1s ease-in 0s;
   height: 100%;
 }
 
