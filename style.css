@@ -47,22 +47,22 @@ textarea {
 
 div.cell {
   position:absolute;
-  background-color: #888;;
-  border: 1px solid black;
 }
 
 div.cell > div {
   position:absolute;
-  width: 100%;
   color: white;
+  background-color: #888;;
   text-align: center;
-  font-size: 48px;
+  overflow: hidden;
+  border: 1px solid black;
+  width: 100%;
 }
 div.current { height: 100%; }
-div.next { height: 0; z-index: 1; background-color: red; overflow: hidden; }
+div.next { height: 0; z-index: 1; }
 
 div.flipping div.cell.active div.next {
-  -webkit-transition: height 0.1s ease-in 0s;
+  -webkit-transition: height 0.3s ease-in;
   height: 100%;
 }
 

@@ -2,7 +2,9 @@
 namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
     var clientLib = namespace.lookup('com.pageforest.client'),
         dom = namespace.lookup('org.startpad.dom'),
-        flip = namespace.lookup('com.pageforest.flip');
+        flip = namespace.lookup('com.pageforest.flip'),
+        vector = namespace.lookup('org.startpad.vector');
+
 
     var client,
         doc,
@@ -80,40 +82,49 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         this.fPlaying = false;
         this.iMessage = 0;
         this.messages = [];
-        this.msFlip = 150;
+        this.msFlip = 1000;
         this.build();
         setInterval(this.flip.fnMethod(this), this.msFlip);
     }
 
     FlapBoardUI.methods({
         build: function() {
-            var row, col, cellSize,
+            var row, col, cellSize, rcCell, fontSize, innerSize,
                 rowLast = -1,
                 self = this;
 
             self.size = dom.getSize(self.elem);
+            cellSize = vector.floor(vector.mult(self.size,
+                                                [1 / this.fb.cols, 1 / this.fb.rows]));
+            rcCell = [0, 0].concat(cellSize);
+            rcCell = vector.rcExpand(rcCell, [-2, -2]);
+            innerSize = vector.size(rcCell);
+            fontSize = innerSize[0] - 1;
             self.cells = [];
 
             self.fb.each(function(row, col, letter) {
                 var cell = document.createElement('div'),
                     current = document.createElement('div'),
-                    next = document.createElement('div');
+                    next = document.createElement('div'),
+                    pos = vector.mult([col, row], cellSize),
+                    rect = pos.concat(vector.add(pos, innerSize));
 
                 $(current).addClass('current');
                 $(next).addClass('next');
 
-                $(cell).addClass("cell")
-                    .css('top', (row / this.rows * 100) + '%')
-                    .css('left', (col / this.cols * 100) + '%')
-                    .css('height', (100 / this.rows) + '%')
-                    .css('width', (100 / this.cols) + '%')
-                    .append(current).append(next);
+                dom.setRect(cell, rect);
+                $(cell).css('font-size', fontSize)
+                    .addClass('cell')
+                    .append(current)
+                    .append(next);
+
                 $(self.elem).append(cell);
 
                 if (row != rowLast) {
                     self.cells.push([]);
                     rowLast = row;
                 }
+
                 self.cells[row].push({
                     cell: cell,
                     current: current,
