@@ -25,14 +25,12 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         },
 
         forward: function() {
-            fbUI.advance();
-            if (fPlaying) {
-                setTimeout(clickHandlers.forward, msFlip);
-            }
+            fbUI.advance(1);
             return false;
         },
 
         back: function() {
+            fbUI.advance(-1);
             return false;
         },
 
@@ -81,6 +79,8 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         this.elem = elem;
         this.fb = new flip.FlapBoard(rows, cols);
         this.fPlaying = false;
+        this.iMessage = 0;
+        this.messages = [];
         this.build();
     }
 
@@ -124,11 +124,23 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         // An array of messages to display
         setMessages: function(messages) {
             this.messages = messages;
-            this.setCurrent(messages[0]);
+            this.setCurrent();
         },
 
-        setCurrent: function(message) {
-            var self = this;
+        advance: function(n) {
+            this.setCurrent(this.iMessage + n);
+        },
+
+        setCurrent: function(i) {
+            var self = this,
+                message;
+
+            if (i != undefined) {
+                this.iMessage = (i + this.messages.length) % this.messages.length;
+            }
+
+            message = this.messages[this.iMessage];
+
             self.fb.setCurrent(message);
             self.fb.each(function (row, col, letter) {
                 var cell = self.cells[row][col];
