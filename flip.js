@@ -71,7 +71,7 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
 
     // Return string exactly len characters long - from source
     // text.
-    // alignment: 'left' (default), 'center', 'right', or 'fill'
+    // alignment: 'left', 'center', 'right', or 'fill' (default)
     // If 'fill', expect a single '|' character in the string which
     // will be filled with padding spaces as needed (right string
     // has priority over left string.
@@ -89,7 +89,7 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             prefix;
 
         text = text.toString();
-        alignment = alignment || 'left';
+        alignment = alignment || 'fill';
         padding = len - text.length;
 
         if (alignment == 'fill') {
@@ -140,28 +140,45 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
     }
 
     /* =================================================
-       Board - Flap Board
+       FlapBoard
        ================================================= */
 
-    function Grid(rows, cols, options) {
+    function FlapBoard(rows, cols, options) {
         this.rows = rows;
         this.cols = cols;
-        this.messages = [];
-        this.current = -1;
         this.window = 2;
-        this.aligned = 'fill';
+        this.current = '';
+        this.target = '';
         base.extendObject(this, options);
+
+        this.setCurrent(this.current);
+        this.setTarget(this.target);
     }
 
-    Grid.methods({
-        addMessage: function(s) {
-            this.messages.push(s);
+    FlapBoard.methods({
+        setCurrent: function(s) {
+            this.current = s;
+            this.currentBoard = this.getBoard(this.current);
+            delete this.sequences;
+            this.position = 0;
+            this.lastPosition = 0;
         },
 
-        getBoard: function(message) {
-            var lines = message.split('\n'),
-                board = [];
-            for (var i = 0; i < lines.length; i++) {
+        setTarget: function(s) {
+            this.target = s;
+            this.recalc();
+        },
+
+        // Return an arrow or *rows* strings, each *cols* in length.
+        getBoard: function(lines) {
+            var i,
+                padding,
+                line;
+
+            lines = lines.split('\n');
+            // Ignore leading and trailing white space, and remove
+            // leading and trailing blank lines.
+            for (i = 0; i < lines.length; i++) {
                 lines = base.strip(lines);
             }
             while (lines[0] == '') {
@@ -170,21 +187,92 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             while (lines[lines.length - 1] == '') {
                 lines.pop();
             }
-            lines = lines.slice(0, this.rows);
-            var cExtra = this.rows - lines.length;
-            for (var row = 0; row < this.rows; row++) {
-                board.push(fillText());
-                if (row <= cExtra / 2) {
-                    board.push(format.repeat(' ', this.cols));
-                    continue;
-                }
 
+            // Center available lines vertically
+            lines = lines.slice(0, this.rows);
+            padding = this.rows - lines.length;
+            for (i = 0; i < padding / 2; i++) {
+                lines.unshift('');
+            }
+            for (i = 0; i < Math.ceil(padding / 2); i++) {
+                line.push('');
             }
 
+            for (i = 0; i < lines.length; i++) {
+                lines[i] = fillText(lines[i], this.cols, 'fill');
+            }
+            return lines;
         },
 
-        setMessage: function(i) {
+        recalc: function() {
+            var row, col,
+                cur, tar, seq,
+                rowSeq;
+
+            this.targetBoard = this.getBoard(this.target);
+
+            this.sequences = [];
+            this.maxSeq = 0;
+            this.position = 0;
+
+            for (row = 0; row < this.rows; row++) {
+                rowSeq = [];
+                this.sequences.push(rowSeq);
+                cur = this.currentBoard[row];
+                tar = this.targetBoard[row];
+                for (col = 0; col < this.cols; col++) {
+                    seq = letterSequence(cur[col], tar[col]);
+                    this.maxSeq = Math.max(this.maxSeq, seq.length);
+                    rowSeq.push(seq);
+                }
+            }
+
+            this.lastPosition = this.maxSeq + this.window - 1;
+        },
+
+        isComplete: function() {
+            return this.position == this.lastPosition;
+        },
+
+        advance: function(n) {
+            var row, col,
+                i, a;
+
+            n = n || 1;
+            this.position = Math.min(this.position + n, this.lastPosition);
+            for (row = 0; row < this.rows; row++) {
+                a = [];
+                for (col = 0; col < this.cols; col++) {
+                    i = Math.min(this.sequences[row][col].length - 1, this.position);
+                    a.push(this.sequences[row][col][i]);
+                }
+                this.currentBoard[row] = a.join('');
+            }
+        },
+
+        getWindow: function(row, col) {
+            var seq = this.sequences[row][col],
+                last = seq.length - 1,
+                i = Math.min(last, this.position - this.window + 1),
+                j = Math.min(last, this.position);
+
+            return seq.slice(i, j + 1);
+        },
+
+        // Enumerate all the cells whose window string has changed in the last cycle.
+        forWindow: function(fn) {
+            var row, col, minFilter;
+
+            minFilter = this.position - this.window + 1;
+            for (row = 0; row < this.rows; row++) {
+                for (col = 0; col < this.cols; col++) {
+                    if (this.sequences[row][col].length >= minFilter) {
+                        fn(row, col, this.getWindow(row, col));
+                    }
+                }
+            }
         }
+
     });
 
     ns.extend({
