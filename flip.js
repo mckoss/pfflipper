@@ -199,7 +199,7 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             }
 
             for (i = 0; i < lines.length; i++) {
-                lines[i] = fillText(lines[i], this.cols, 'fill');
+                lines[i] = fillText(lines[i].toUpperCase(), this.cols);
             }
             return lines;
         },

@@ -54,7 +54,9 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
         });
 
         ts.addTest("FlapBoard", function(ut) {
-            var fb = new flip.FlapBoard(5, 10),
+            var fb = new flip.FlapBoard(5, 10, {window: 1}),
+                blank = '          ',
+                expect,
                 i;
 
             ut.assertEq(fb.rows, 5);
@@ -64,8 +66,24 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
             ut.assertEq(fb.isComplete(), false);
 
             for (i = 0; i < 5; i++) {
-                ut.assertEq(fb.currentBoard[i], '          ');
+                ut.assertEq(fb.currentBoard[i], blank);
             }
+
+            fb.setCurrent('|hi|\n|mom|');
+            expect = [blank, '    HI    ', '   MOM    ', blank, blank];
+            for (i = 0; i < 5; i++) {
+                ut.assertEq(fb.currentBoard[i], expect[i]);
+            }
+
+            fb.setTarget('|hi|\n|mom|');
+            ut.assertEq(fb.isComplete(), false);
+            fb.advance();
+            ut.assertEq(fb.isComplete(), true);
+            for (i = 0; i < 5; i++) {
+                ut.assertEq(fb.currentBoard[i], expect[i]);
+                ut.assertEq(fb.currentBoard[i], fb.targetBoard[i]);
+            }
+
         });
     };
 });
