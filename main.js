@@ -3,8 +3,8 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
     var clientLib = namespace.lookup('com.pageforest.client'),
         dom = namespace.lookup('org.startpad.dom'),
         flip = namespace.lookup('com.pageforest.flip'),
-        vector = namespace.lookup('org.startpad.vector');
-
+        vector = namespace.lookup('org.startpad.vector'),
+        base = namespace.lookup('org.startpad.base');
 
     var client,
         doc,
@@ -12,16 +12,34 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         fbUI,
         rows = 6, cols = 21,
         fPlaying = false,
-        messageSplit = /\n-+\n/;
+        messageSplit = /\n-+\n/,
+        slideTimeout = 5000;
+
+    function onFlipComplete() {
+        var self = this;
+        if (fPlaying) {
+            setTimeout(function() {
+                self.advance(1);
+            }, slideTimeout);
+        }
+    }
+
+    function onMessagesChange() {
+        fbUI.setMessages($(doc.messages).val().split(messageSplit));
+    }
+
+    function onMessage(i, n) {
+        $(doc.pageNum).text(i + 1);
+        $(doc.pages).text(n);
+    }
 
     clickHandlers = {
         playPause: function() {
             fPlaying = !fPlaying;
             $(document.body)[fPlaying ? 'addClass' : 'removeClass']('playing');
             if (fPlaying) {
-                fbUI.setMessages($(doc.messages).val().split(messageSplit));
+                fbUI.advance(1);
             }
-            fbUI.play(fPlaying);
             return false;
         },
 
@@ -59,7 +77,8 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
             $(doc.messages).val(json.blob.text);
         }
         $(doc.title).text(json.title);
-        fbUI.setMessages(json.blob.text.split(messageSplit));
+
+        onMessagesChange();
     }
 
     function getDoc() {
@@ -76,13 +95,16 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         $(doc.title).text(client.meta.title);
     }
 
-    function FlapBoardUI(elem, rows, cols) {
-        this.elem = elem;
-        this.fb = new flip.FlapBoard(rows, cols);
-        this.fPlaying = false;
-        this.iMessage = 0;
-        this.messages = [];
-        this.msFlip = 200;
+    function FlapBoardUI(elem, rows, cols, options) {
+        var defaults = {
+            elem: elem,
+            fb: new flip.FlapBoard(rows, cols),
+            iMessage: 0,
+            messages: [],
+            msFlip: 200,
+            fFlipping: false
+        };
+        base.extendObject(this, defaults, options);
         this.build();
         setInterval(this.flip.fnMethod(this), this.msFlip);
     }
@@ -153,13 +175,21 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
                 this.iMessage = (i + this.messages.length) % this.messages.length;
             }
 
+            if (self.onMessage) {
+                self.onMessage(this.iMessage, this.messages.length);
+            }
+
             message = this.messages[this.iMessage];
 
+            // Stop all active animations when we reset new target
+            // otherwise some cells will remain in active state
+            // even though they are no longer changing.
+            $('.active').removeClass('active');
+            self.fb.each(function (row, col, letter) {
+                var cell = self.cells[row][col];
+                $(cell.current).text(letter);
+            });
             self.fb.setTarget(message);
-        },
-
-        play: function(fPlay) {
-            this.fPlay = fPlay;
         },
 
         // Called on a timer - should initiate animation to next letters.
@@ -174,8 +204,13 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
             var self = this;
 
             if (self.fb.isComplete()) {
+                if (self.fFlipping && self.onFlipComplete) {
+                    self.onFlipComplete.call(self);
+                }
+                self.fFlipping = false;
                 return;
             }
+            self.fFlipping = true;
 
             self.fb.advance();
 
@@ -203,14 +238,17 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
     function onReady() {
         doc = dom.bindIDs();
         addClickHandlers();
+        $(doc.messages).bind('keyup', onMessagesChange);
 
-        fbUI = new FlapBoardUI(doc.board, rows, cols);
-        fbUI.setMessages($(doc.messages).val().split(messageSplit));
+        fbUI = new FlapBoardUI(doc.board, rows, cols,
+            {onFlipComplete: onFlipComplete,
+             onMessage: onMessage});
 
         client = new clientLib.Client(ns);
         if (doc.title) {
             client.addAppBar();
         }
+        onMessagesChange();
     }
 
     ns.extend({

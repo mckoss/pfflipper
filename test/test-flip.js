@@ -154,6 +154,10 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
                 count++;
             });
             ut.assertEq(count, 6);
+
+            var ss = fb.snapshotBoard();
+            expect = [blank, '  AAIJA   ', '   MPM    ', blank, blank];
+            ut.assertEq(ss, expect);
         });
     };
 });

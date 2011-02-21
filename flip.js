@@ -165,7 +165,24 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             return this;
         },
 
+        snapshotBoard: function() {
+            var lines = [];
+
+            if (this.position == 0) {
+                return this.currentBoard;
+            }
+
+            this.each(function (row, col, letter) {
+                if (lines[row] == undefined) {
+                    lines[row] = '';
+                }
+                lines[row] += letter;
+            });
+            return lines;
+        },
+
         setTarget: function(s) {
+            this.currentBoard = this.snapshotBoard();
             this.target = s;
             this.recalc();
             return this;
@@ -264,13 +281,16 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             return seq.slice(i, j + 1);
         },
 
+        // Loop through all cells on the board, returning the current
+        // value of each cell (taking into account the current sequence.
         each: function(fn) {
             var row, col, line;
 
             for (row = 0; row < this.rows; row++) {
                 line = this.currentBoard[row];
                 for (col = 0; col < this.cols; col++) {
-                    fn.call(this, row, col, line[col]);
+                    letters = this.getWindow(row, col);
+                    fn.call(this, row, col, letters.substr(-1));
                 }
             }
         },

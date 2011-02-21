@@ -43,7 +43,7 @@ textarea {
   text-align:center;
 }
 
-#board { height: 400px; background-color: #444; position: relative; }
+#board { height: 400px; position: relative; }
 
 div.cell {
   position:absolute;
