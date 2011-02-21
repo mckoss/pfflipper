@@ -25,6 +25,13 @@ $(document).ready(namespace.com.pageforest.flip.main.onReady);
 
     <div id="board"></div>
 
+    <div id="nav">
+      <a id="back"></a>
+      <a id="playPause"></a>
+      <a id="forward"></a>
+      <div id="pageLocation">Page <span id='pageNum'>1</span> of <span id='pages'>1</span></div>
+    </div>
+
     <textarea id='input'>
 Welcome!
 To the split-flap
@@ -40,22 +47,12 @@ separated by a line
 with only ---.
     </textarea>
 
-  <div id='display'></div>
-  <div id="nav">
-    <a id="back"></a>
-    <a id="playPause"></a>
-    <a id="forward"></a>
-    <div id="pageLocation">Page <span id='pageNum'>1</span> of <span id='pages'>1</span></div>
-  </div>
-
-  <div id="footer">
-    <a target="_blank" id="displayLink">Link to this display</a> |
-    <a target="_blank" href="https://github.com/mckoss/flipper">Source Code</a> |
-    <a href="http://www.pageforest.com">Pageforest.com</a>
-  </div> <!-- footer -->
-
-
-</div> <!-- page -->
+    <div id="footer">
+      <a target="_blank" id="displayLink">Link to this display</a> |
+      <a target="_blank" href="https://github.com/mckoss/flipper">Source Code</a> |
+      <a href="http://www.pageforest.com">Pageforest.com</a>
+    </div> <!-- footer -->
+  </div> <!-- page -->
 
 <script type="text/javascript">
 var _gaq = _gaq || [];

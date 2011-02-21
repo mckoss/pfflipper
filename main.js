@@ -1,14 +1,21 @@
 /*global Modernizr */
 namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
     var clientLib = namespace.lookup('com.pageforest.client'),
-        dom = namespace.lookup('org.startpad.dom');
+        dom = namespace.lookup('org.startpad.dom'),
+        flip = namespace.lookup('com.pageforest.flip');
 
     var client,
         doc,
-        clickHandlers;
+        clickHandlers,
+        fbUI,
+        rows = 5, cols = 21,
+        fPlaying = false;
 
     clickHandlers = {
         playPause: function() {
+            fPlaying = !fPlaying;
+            $(document.body)[fPlaying ? 'addClass' : 'removeClass']('playing');
+            $(document.body)[fPlaying ? 'addClass' : 'removeClass']('flipping');
             return false;
         },
 
@@ -39,15 +46,6 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         }
     }
 
-    function onReady() {
-        doc = dom.bindIDs();
-        addClickHandlers();
-        client = new clientLib.Client(ns);
-        if (document.getElementById('title')) {
-            client.addAppBar();
-        }
-    }
-
     function setDoc(json) {
         if (json.blob.text) {
             $('#input').val(json.blob.text);
@@ -67,6 +65,58 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
 
     function onSaveSuccess() {
         $(doc.title).text(client.meta.title);
+    }
+
+    function FlapBoardUI(elem, rows, cols) {
+        this.elem = elem;
+        this.fb = new flip.FlapBoard(rows, cols);
+        this.build();
+    }
+
+    FlapBoardUI.methods({
+        build: function() {
+            var row, col, cellSize,
+                rowLast = -1,
+                self = this;
+
+            self.size = dom.getSize(self.elem);
+            self.cells = [];
+
+            self.fb.each(function(row, col, letter) {
+                var cell = document.createElement('div'),
+                    current = document.createElement('div'),
+                    next = document.createElement('div');
+
+                $(current).addClass('current');
+                $(next).addClass('next');
+
+                $(cell).addClass("cell")
+                    .css('top', (row / this.rows * 100) + '%')
+                    .css('left', (col / this.cols * 100) + '%')
+                    .css('height', (100 / this.rows) + '%')
+                    .css('width', (100 / this.cols) + '%')
+                    .append(current).append(next);
+                $(self.elem).append(cell);
+
+                if (row != rowLast) {
+                    self.cells.push([]);
+                    rowLast = row;
+                }
+                self.cells[row].push({current: current, next: next});
+            });
+        }
+    });
+
+    function onReady() {
+        doc = dom.bindIDs();
+        addClickHandlers();
+
+        fbUI = new FlapBoardUI(doc.board, rows, cols);
+
+        client = new clientLib.Client(ns);
+        if (doc.title) {
+            client.addAppBar();
+        }
     }
 
     ns.extend({

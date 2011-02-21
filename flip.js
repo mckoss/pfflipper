@@ -261,18 +261,26 @@ namespace.lookup('com.pageforest.flip').defineOnce(function (ns) {
             return seq.slice(i, j + 1);
         },
 
-        // Enumerate all the cells whose window string has changed in the last cycle.
-        forWindow: function(fn) {
-            var row, col, minFilter;
+        each: function(fn) {
+            var row, col;
 
-            minFilter = this.position - this.window + 1;
             for (row = 0; row < this.rows; row++) {
                 for (col = 0; col < this.cols; col++) {
-                    if (this.sequences[row][col].length > minFilter) {
-                        fn.call(this, row, col, this.getWindow(row, col));
-                    }
+                    fn.call(this, row, col);
                 }
             }
+        },
+
+        // Enumerate all the cells whose window string has changed in the last cycle.
+        forWindow: function(fn) {
+            var minFilter;
+
+            minFilter = this.position - this.window + 1;
+            this.each(function (row, col) {
+                if (this.sequences[row][col].length > minFilter) {
+                    fn.call(this, row, col, this.getWindow(row, col));
+                }
+            });
         }
 
     });
