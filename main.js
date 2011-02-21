@@ -101,7 +101,7 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
             fb: new flip.FlapBoard(rows, cols),
             iMessage: 0,
             messages: [],
-            msFlip: 200,
+            msFlip: 150,
             fFlipping: false
         };
         base.extendObject(this, defaults, options);
@@ -115,6 +115,7 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
                 rowLast = -1,
                 self = this;
 
+            $(self.elem).empty();
             self.size = dom.getSize(self.elem);
             cellSize = vector.floor(vector.mult(self.size,
                                                 [1 / this.fb.cols, 1 / this.fb.rows]));
