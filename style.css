@@ -52,7 +52,7 @@ div.cell {
 div.cell > div {
   position:absolute;
   color: white;
-  background-color: #888;;
+  background-color: #555;
   text-align: center;
   overflow: hidden;
   border: 1px solid black;

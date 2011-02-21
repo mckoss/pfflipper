@@ -11,7 +11,7 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         clickHandlers,
         fbUI,
         rows = 6, cols = 21,
-        fPlaying = false,
+        fPlaying = true,
         messageSplit = /\n-+\n/,
         slideTimeout = 5000;
 
@@ -271,6 +271,10 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
 
         $(doc.displayMode).val(fbUI.displayMode)
             .change(onDisplayMode);
+
+        if (fPlaying) {
+            $(document.body).addClass('playing');
+        }
 
         // Buggy?
         //$(window).resize(fbUI.build.fnMethod(fbUI));
