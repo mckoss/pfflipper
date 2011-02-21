@@ -29,15 +29,16 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
         ts.addTest("fillText", function(ut) {
             var test,
                 tests = [
-                    ['a', undefined, 'a         '],
-                    ['a', 'left',    'a         '],
-                    ['a', 'right',   '         a'],
-                    ['a', 'center',  '    a     '],
-                    ['a', 'fill',    'a         '],
-                    ['a|', 'fill',   'a         '],
-                    ['|a', 'fill',   '         a'],
-                    ['|a|', 'fill',  '    a     '],
-                    ['a|b', 'fill',  'a        b'],
+                    ['a', undefined,  'a         '],
+                    ['a', 'left',     'a         '],
+                    ['a', 'right',    '         a'],
+                    ['a', 'center',   '    a     '],
+                    ['a', 'fill',     'a         '],
+                    ['a|', 'fill',    'a         '],
+                    ['|a', 'fill',    '         a'],
+                    ['|a|', 'fill',   '    a     '],
+                    ['a|b', 'fill',   'a        b'],
+                    ['a|b|c', 'fill', 'a   b    c'],
 
                     ['hello | world', 'fill',     'hell world'],
                     ['| hello | world |', 'fill', 'hell world'],
@@ -45,8 +46,6 @@ namespace.lookup('com.pageforest.flip.test').defineOnce(function (ns) {
                     ['abcdefghijkl', 'left',   'abcdefghij'],
                     ['abcdefghijkl', 'right',  'cdefghijkl'],
                     ['abcdefghijkl', 'center', 'bcdefghijk']
-
-
                 ];
             for (var i = 0; i < tests.length; i++) {
                 test = tests[i];
