@@ -33,6 +33,11 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         $(doc.pages).text(n);
     }
 
+    function onDisplayMode(mode) {
+        fbUI.displayMode = mode;
+        fbUI.build();
+    }
+
     clickHandlers = {
         playPause: function() {
             fPlaying = !fPlaying;
@@ -75,6 +80,9 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
     function setDoc(json) {
         if (json.blob.text) {
             $(doc.messages).val(json.blob.text);
+            if (json.blob.version >= 2) {
+                $(doc.displayMode).val(json.blob.displayMode);
+            }
         }
         $(doc.title).text(json.title);
 
@@ -85,8 +93,9 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         return {
             "readers" : ["public"],
             "blob": {
-                version: 1,
-                text: $(doc.messages).val()
+                version: 2,
+                text: $(doc.messages).val(),
+                displayMode: $(doc.displayMode).val()
             }
         };
     }
@@ -102,7 +111,8 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
             iMessage: 0,
             messages: [],
             msFlip: 150,
-            fFlipping: false
+            fFlipping: false,
+            displayMode: 'wipe'
         };
         base.extendObject(this, defaults, options);
         this.build();
@@ -115,7 +125,9 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
                 rowLast = -1,
                 self = this;
 
+            self.cells = [];
             $(self.elem).empty();
+
             self.size = dom.getSize(self.elem);
             cellSize = vector.floor(vector.mult(self.size,
                                                 [1 / this.fb.cols, 1 / this.fb.rows]));
@@ -123,7 +135,6 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
             rcCell = vector.rcExpand(rcCell, [-2, -2]);
             innerSize = vector.size(rcCell);
             fontSize = Math.floor(Math.min(innerSize[0] - 1, innerSize[1] / 1.2)) + 'px';
-            self.cells = [];
 
             self.fb.each(function(row, col, letter) {
                 var cell = document.createElement('div'),
@@ -156,6 +167,8 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
                     next: next
                 });
             });
+
+            self.redraw();
         },
 
         // An array of messages to display
@@ -166,6 +179,21 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
 
         advance: function(n) {
             this.setTarget(this.iMessage + n);
+        },
+
+        redraw: function() {
+            var self = this;
+
+            // Not built yet.
+            if (self.cells == undefined) {
+                return;
+            }
+
+            $('.active', self.elem).removeClass('active');
+            self.fb.each(function (row, col, letter) {
+                var cell = self.cells[row][col];
+                $(cell.current).text(letter);
+            });
         },
 
         setTarget: function(i) {
@@ -185,11 +213,7 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
             // Stop all active animations when we reset new target
             // otherwise some cells will remain in active state
             // even though they are no longer changing.
-            $('.active').removeClass('active');
-            self.fb.each(function (row, col, letter) {
-                var cell = self.cells[row][col];
-                $(cell.current).text(letter);
-            });
+            this.redraw();
             self.fb.setTarget(message);
         },
 
@@ -244,6 +268,12 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         fbUI = new FlapBoardUI(doc.board, rows, cols,
             {onFlipComplete: onFlipComplete,
              onMessage: onMessage});
+
+        $(doc.displayMode).val(fbUI.displayMode)
+            .change(onDisplayMode);
+
+        // Buggy?
+        //$(window).resize(fbUI.build.fnMethod(fbUI));
 
         client = new clientLib.Client(ns);
         if (doc.title) {
