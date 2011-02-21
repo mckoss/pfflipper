@@ -1,130 +1,63 @@
 body {
-    margin: 0;
-    padding: 0;
-    font-family: Helvetica, sans-serif;
-    font-size: 15px;
-    background: none;
+  margin: 0;
+  padding: 0;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 100%;
+  background: #ebebeb url("/images/gradient.jpg") repeat-x left top;
 }
 
-img { border: 0; }
-#warning, #pageof { display: none;  }
-#pageof { position: absolute; top: 10px; right: 0px; }
-.rt { text-align: right; }
+div { padding:0; margin:0; }
+p { margin: 0 0 8px 0; line-height: 140%; }
+h1, h2, h3, h4, h5 { margin: 5px 0; }
+a { color: #444; }
+a:visited { color: #888; }
+a:hover { color: #000; }
+li { line-height: 120%; margin-bottom: 8px; }
 
-label {
-    font-size: 24px;
-    font-weight: bold;
-    display: inline-block;
-    width: 100px;
-    vertical-align: top;
-}
+#page { width: 90%; margin: auto; }
+#page:not(.edit) .if_edit { display: none; }
 
-#main {
-    width: 900px;
-    margin: 0 auto;
-    text-align: center;
-}
-
-#maind {
-    margin: 0 auto;
-    text-align: center;
+#page-heading {
+    border-bottom: 2px solid black;
+    padding-bottom: 4px;
+    position: relative;
+    width: 100%;
 }
 
 textarea {
     font-family: "Courier New", Courier, monospace;
+    font-size: inherit;
     width: 100%;
-    height: 200px;
-    font-size: 15px;
 }
 
-#display {
-    background-color: #555;
-    border-color: #555;
-    border-style: solid;
-    border-width: 2px 4px 2px 2px;
+#footer {
+    clear: both;
+    margin: 10px 0;
+    text-align:center;
 }
+
+#board { height: 400px; }
+
+#nav { margin: 2px 0; text-align: center; position: relative; }
 
 #nav a {
+    background-image: url('images/icons.jpg');
     display: inline-block;
     border: 1px solid transparent;
     margin: 2px 0;
     text-decoration: none;
     color: white;
-    background-image: url('images/icons.jpg');
     height: 30px;
     width: 30px;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px;
     border-radius: 4px;
+    -moz-border-radius: 4px;
 }
 
 #nav a:hover { border: 1px solid orange; }
-#play { background-position: 165px -3px; }
-#stop { background-position: 132px -3px; }
-#rev { background-position: 501px -36px; }
-#fwd { background-position: 468px -36px; }
-#nav { margin: 2px 0; position: relative;}
-#pfAppPanel { z-index:100 }
 
-div.ibox { display: inline-block; }
-div.down > div { position: relative; top: -100%; }
-div.spn { position: absolute; top: 0; left: 0; }
-div.text { height: 200%; }
-div.text span { vertical-align: middle; }
-div.top { z-index: 5; }
-div.bottom { z-index: 1; }
+#back { background-position: 501px -36px; }
+#playPause { background-position: 165px -3px; }
+body.playing #playPause { background-position: 132px -3px; }
+#forward { background-position: 468px -36px; }
 
-div.box {
-    display: inline-block;
-    margin: 3px 2px;
-    font-weight: bold;
-    position:relative;
-    -webkit-box-shadow: #222 3px 5px 1px;
-}
-
-div.dv {
-    color: #FFF;
-    overflow:hidden;
-    border-style: solid;
-    border-color:#222;
-    background-color: #555;
-}
-
-div.scalea {
-    -webkit-transition: -webkit-transform 0.1s ease-in 0s;
-    -webkit-transform: rotate3d(1,0,0,90deg) skew(8deg, 0deg);
-    -moz-transition: -moz-transform 0.25s ease-in 0s;
-    -moz-transform: scaley(0) skew(8deg, 0deg);
-}
-
-div.scaleb {
-    -webkit-transition: -webkit-transform 0.1s ease-out 0s;
-    -webkit-transform: rotate3d(1,0,0,0deg) skew(0deg, 0deg) !important;
-    -moz-transition: -moz-transform 0.25s ease-out;
-    -moz-transform: scaley(1) skew(0deg, 0deg) !important;
-}
-
-div.sa {
-    -webkit-transition: color 0.1s ease-in 0s;
-    -moz-transition: color 0.1s ease-in 0s;
-    color:#333;
-}
-
-div.up {
-    -webkit-transform-origin: 100% 100%;
-    -moz-transform-origin: 100% 100%;
-    border-width: 1px;
-}
-
-div.down {
-    border-width: 0 1px 1px 1px;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#555), to(#333));
-    background: -moz-linear-gradient(100% 100% 90deg, #333, #555);
-}
-
-div.sdown {
-    -webkit-transform-origin: 0% 0%;
-    -moz-transform-origin: 0% 0%;
-    -webkit-transform: rotate3d(1,0,0,90deg) skew(-8deg, 0deg);
-    -moz-transform: scaley(0) skew(-8deg, 0deg);
-}
+#pageLocation { position: absolute; right: 0; top: 0; font-size: 75%; font-weight: bold; }

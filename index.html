@@ -1,39 +1,31 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Split-Flap Display Simulator</title>
-    <link rel="icon" type="image/png" href="/images/icon.png"/>
-    <link rel="apple-touch-icon" href="/images/touch.png"/>
-    <link rel="stylesheet" type="text/css" href="style.css"/>
-    <link rel="stylesheet" type="text/css" href="/lib/beta/css/client.css"/>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
-    <script type="text/javascript" src="/lib/beta/js/json2.min.js"></script>
-    <script type="text/javascript" src="/lib/beta/js/utils.js"></script>
-    <script type="text/javascript" src="modernizr-1.6.min.js"></script>
-    <script type="text/javascript" src="main.js"></script>
-    <script type="text/javascript">
-      var flipper = namespace.lookup("com.pageforest.flipper");
-      $(document).ready(flipper.onReady);
-    </script>
-  </head>
-  <body>
-    <div id='main'>
-      <div id="warning" class='ibox'>
-        <span>Sorry, no split-flap animation for you! Your browser doesn't support CSS3 transform/transition.</span>
-        <a href="javascript:void(0)" onClick="$(this).parent().hide()">Close this</a>
-      </div>
-      <h1 id="title" class='ibox'><script type="text/javascript">document.write(document.title);</script></h1>
-      <div id='display' class='ibox'></div>
-      <div id="nav" class='ibox'>
-        <a id="rev" href="javascript:void(0)" onclick="flipper.rev()" name="rev"></a>
-        <a id="play" href="javascript:void(0)" onclick="flipper.play()" name="play"></a>
-        <a id="stop" href="javascript:void(0)" onclick="flipper.stop()" name="stop"></a>
-        <a id="fwd" href="javascript:void(0)" onclick="flipper.fwd()" name="fwd"></a>
-        <span id="pageof">Page <span id='offset'></span> of <span id='limit'></span></span>
-      </div>
-      <div id="form" class='ibox'>
+<head>
+<title>Split-Flap Display Simulator</title>
+<link rel="icon" type="image/png" href="/images/icon.png"/>
+<link rel="apple-touch-icon" href="/images/touch.png"/>
+<link rel="stylesheet" type="text/css" href="style.css"/>
+<link rel="stylesheet" type="text/css" href="/lib/beta/css/client.css"/>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+<script type="text/javascript" src="/lib/beta/js/json2.min.js"></script>
+<script type="text/javascript" src="/lib/beta/js/utils.js"></script>
+<script type="text/javascript" src="modernizr-1.6.min.js"></script>
+<script type="text/javascript" src="flip.js"></script>
+<script type="text/javascript" src="main.js"></script>
+<script type="text/javascript">
+$(document).ready(namespace.com.pageforest.flip.main.onReady);
+</script>
+</head>
 
-<textarea id='input' rows="10" cols="100">
+<body>
+  <div id="page">
+    <h1 id="page-heading">
+      <span id="title">Split-Flap Display Simulator</span>
+    </h1>
+
+    <div id="board"></div>
+
+    <textarea id='input' rows="20" cols="100">
 Welcome!
 To the split-flap
 Display Simulator
@@ -45,13 +37,39 @@ own message
 Just type pages into
 the text box,
 separated by a line
-with only ---.</textarea>
-        <div class='rt'>
-          <a href="javascript:void(0);" onclick="flipper.linkToDisplay()">Link to this display</a>
-        </div>
-        <div id='da' class='dd dda' style='position:absolute;'></div>
-        <div id='db' class='dd ddb' style='position:absolute;'></div>
-      </div>
-    </div>
-  </body>
+with only ---.
+    </textarea>
+
+  <div id='display'></div>
+  <div id="nav">
+    <a id="back"></a>
+    <a id="playPause"></a>
+    <a id="forward"></a>
+    <span id="pageLocation">Page <span id='pageNum'>1</span> of <span id='pages'>1</span></span>
+  </div>
+
+  <div id="footer">
+    <hr/>
+    <a target="_blank" id="displayLink">Link to this display</a> |
+    <a target="_blank" href="https://github.com/mckoss/flipper">Source Code</a> |
+    <a href="http://www.pageforest.com">Pageforest.com</a>
+  </div> <!-- footer -->
+
+
+</div> <!-- page -->
+
+<script type="text/javascript">
+var _gaq = _gaq || [];
+_gaq.push(['_setAccount', 'UA-2072869-7']);
+_gaq.push(['_trackPageview']);
+
+(function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') +
+  '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+</body>
 </html>
