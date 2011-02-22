@@ -82,6 +82,8 @@ div.flipping div.cell.active div.next {
 
 #nav a:hover { border: 1px solid orange; }
 
+#time { position: absolute; top: 0; right: 0; width: 300px; height: 55px; }
+
 #back { background-position: 501px -36px; }
 #playPause { background-position: 165px -3px; }
 body.playing #playPause { background-position: 132px -3px; }

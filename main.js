@@ -4,12 +4,13 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         dom = namespace.lookup('org.startpad.dom'),
         flip = namespace.lookup('com.pageforest.flip'),
         vector = namespace.lookup('org.startpad.vector'),
+        format = namespace.lookup('org.startpad.format'),
         base = namespace.lookup('org.startpad.base');
 
     var client,
         doc,
         clickHandlers,
-        fbUI,
+        fbUI, fbTime,
         rows = 6, cols = 21,
         fPlaying = true,
         messageSplit = /\n-+\n/,
@@ -197,24 +198,23 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         },
 
         setTarget: function(i) {
-            var self = this,
-                message;
-
             if (i != undefined) {
                 this.iMessage = (i + this.messages.length) % this.messages.length;
             }
 
-            if (self.onMessage) {
-                self.onMessage(this.iMessage, this.messages.length);
+            if (this.onMessage) {
+                this.onMessage(this.iMessage, this.messages.length);
             }
 
-            message = this.messages[this.iMessage];
+            this.setMessage(this.messages[this.iMessage]);
+        },
 
+        setMessage: function(message) {
             // Stop all active animations when we reset new target
             // otherwise some cells will remain in active state
             // even though they are no longer changing.
             this.redraw();
-            self.fb.setTarget(message);
+            this.fb.setTarget(message);
         },
 
         // Called on a timer - should initiate animation to next letters.
@@ -269,6 +269,14 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
             {onFlipComplete: onFlipComplete,
              onMessage: onMessage});
 
+        fbTime = new FlapBoardUI(doc.time, 1, 8);
+        setInterval(function () {
+            var now = new Date();
+            fbTime.setMessage(format.fixedDigits(now.getHours(), 2) + ':' +
+                              format.fixedDigits(now.getMinutes(), 2) + ':' +
+                              format.fixedDigits(now.getSeconds(), 2));
+        }, 1000);
+
         $(doc.displayMode).val(fbUI.displayMode)
             .change(onDisplayMode);
 
@@ -280,6 +288,7 @@ namespace.lookup('com.pageforest.flip.main').defineOnce(function (ns) {
         //$(window).resize(fbUI.build.fnMethod(fbUI));
 
         client = new clientLib.Client(ns);
+        client.autoLoad = true;
         if (doc.title) {
             client.addAppBar();
         }
