@@ -1,11 +1,11 @@
 {
-  "application": "aflip",
+  "application": "flipper",
   "cloneable": false,
   "created": {
     "__class__": "Date",
     "isoformat": "2011-01-28T19:06:54.775390Z"
   },
-  "icon": "null",
+  "icon": "images/icon.png",
   "modified": {
     "__class__": "Date",
     "isoformat": "2011-01-31T21:57:49.666856Z"
